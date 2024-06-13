@@ -303,7 +303,7 @@ class ChatFormState extends State<ChatForm> {
       var controllertext = _controller.text;
       var jsonMessage = jsonEncode(
         {
-          'origin' : 'flutter',
+          'author' : 'flutter',
           'message' : controllertext
         }
       );

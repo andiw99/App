@@ -11,16 +11,19 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+# environment variables
+env = environ.Env()
+environ.Env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*r$g(!mbc2e*j!iqa22qc3xgkny0u%wz@rbc%%dq+)sv-c5lvo'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -85,10 +88,23 @@ WSGI_APPLICATION = 'chatapp_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
+""" DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    }
+} """
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        #'NAME': '...',              # Is this just the name or do I need a path?
+        #'USER': '...',                 # I am using postgres user now... could also use andi but I think postgres has more rights
+        "OPTIONS": {
+            "service": "app_service",        # this is the file where the connection details to the DB are written?
+            "passfile": ".app_pgpass",       # this is some authentication to connect to the DB
+        },
+        "PASSWORD": env('DATABASE_PASS')
     }
 }
 

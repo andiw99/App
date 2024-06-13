@@ -31,7 +31,7 @@
                 let messages = document.getElementById('messages')
 
                 messages.insertAdjacentHTML('beforeend', `<div>
-                                        <p>${data.origin}: ${data.message}</p>
+                                        <p>${data.author}: ${data.message}</p>
                                     </div>`)
             }
         }
@@ -41,7 +41,7 @@
             e.preventDefault()
             let message = e.target.message.value 
             chatSocket.send(JSON.stringify({
-                'origin': 'django',
+                'author': 'admin',
                 'message':message
             }))
             form.reset()
