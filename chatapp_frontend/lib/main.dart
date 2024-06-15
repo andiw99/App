@@ -3,6 +3,9 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'dart:convert';
@@ -189,7 +192,8 @@ class ChatPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chatroom'),
+        backgroundColor: Colors.blue[400],
+        title: const Text('Chatroom', style: TextStyle(fontWeight: FontWeight.bold),),
       ),
       body: ChatForm(),
       /* Center(
@@ -232,25 +236,22 @@ class ChatFormState extends State<ChatForm> {
   // Okay I think this guy is just used in the _sendMessage method to get and format the data of the form
   final TextEditingController _controller = TextEditingController();
 
-
   ChatFormState() {
     // This is a constructor so that i make sure that _channel is initialized before I am going to use it.
     // TODO I think I cant use _channel?  Everytime i get the error 'each child must be laid out exactly once'
     // which makes absolutely no sense for me If i just initialize something in the constructor
-    StreamSubscription _sub = WebSocketChannel.connect(Uri.parse(
-      'ws://192.168.178.96:8000/ws/socket-server/')).stream.listen((value) {
-        // This catches every message now
-        print("Inside sub: ");
-        print(value);
-        // if (value.hasData) in contrast to inside the streambuilder, this is just a string
-        final jsonMessage = jsonDecode(value) as Map<String, dynamic>; 
-        if (jsonMessage['type'] == 'chat') {
-            setState(() {
-            messages.add(Tuple2(
-            jsonMessage['author'],
-            jsonMessage['message']));
-            });
-        }      
+    StreamSubscription _sub = WebSocketChannel.connect(
+            Uri.parse('ws://192.168.178.96:8000/ws/socket-server/'))
+        .stream
+        .listen((value) {
+      // This catches every message now
+      // if (value.hasData) in contrast to inside the streambuilder, this is just a string
+      final jsonMessage = jsonDecode(value) as Map<String, dynamic>;
+      if (jsonMessage['type'] == 'chat') {
+        setState(() {
+          messages.add(Tuple2(jsonMessage['author'], jsonMessage['message']));
+        });
+      }
     });
   }
 
@@ -305,45 +306,78 @@ class ChatFormState extends State<ChatForm> {
           ), */
           Expanded(
             child: ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    reverse: true,        
-                    itemCount: messages.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Container(
-                        height: 50,
-                        // padding: const EdgeInsets.all(0.0),
-                        margin:  const EdgeInsets.only(left: 10.0, right: 10.0 ),
-                        child: Container(
-                            child: buildChatBubble(context, '${messages[messages.length - index - 1].item1}: ${messages[messages.length - index - 1].item2}', Colors.blue)// Text(
-                                // '${messages[messages.length - index - 1].item1}: ${messages[messages.length - index - 1].item2}'),
-                        ),
-                      );
-                    }),
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                reverse: true,
+                itemCount: messages.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    //height: _bubbleHeight(),
+                    // padding: const EdgeInsets.all(0.0),
+                    margin: const EdgeInsets.only(left: 10.0, right: 25.0),
+                    child: buildChatBubble(
+                        context,
+                        messages[messages.length - index - 1].item1,
+                        messages[messages.length - index - 1].item2), // Text(
+                    // '${messages[messages.length - index - 1].item1}: ${messages[messages.length - index - 1].item2}'),
+                  );
+                }),
           ),
-          const SizedBox(height: 24),
-          
-          Form(
-            key: _formKey,
-            child: TextFormField(
-              decoration: const InputDecoration(labelText: 'Send a message'),
-              controller: _controller,
+          //const SizedBox(height: 4),
+          Container(
+            margin: const EdgeInsets.all(2.0),
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(10.0),
             ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-/*                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Processing Data')),
-                ); */
-                _sendMessage();
-              }
-            },
-            child: const Text('Send on god'),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 10.0, vertical: 5.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20)),
+                    child: Form(
+                      key: _formKey,
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                            hintText: 'Message', border: InputBorder.none),
+                        controller: _controller,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(right: 10.0),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(25)),
+                  child: IconButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        /*                 ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Processing Data')),
+                    ); */
+                        _sendMessage();
+                      }
+                    },
+                    icon: const Icon(Icons.send),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
+  }
+
+  double _bubbleHeight() {
+    // logic for the size of the chatbubble, somehow we need to know if the message will be in two lines
+    return 50;
   }
 
   void _sendMessage() async {
@@ -356,36 +390,93 @@ class ChatFormState extends State<ChatForm> {
       print("_sendMessage method called");
 
       print("controller.text: $controllertext");
+      _controller.clear();
     }
   }
 }
 
-Widget buildChatBubble(BuildContext context, String text, Color color) {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: Container(
-        padding: EdgeInsets.all(10.0),
-        margin: EdgeInsets.symmetric(vertical: 0.0),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(5.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 1,
-              blurRadius: 5,
-              offset: Offset(0, 3), // changes position of shadow
-            ),
-          ],
+Widget buildChatMateBubble(
+    BuildContext context, String author, String msg, Color color) {
+  return Align(
+    alignment: Alignment.centerLeft,
+    child: Container(
+      padding:
+          const EdgeInsets.only(left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
+      margin: const EdgeInsets.symmetric(vertical: 7.0),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: const BorderRadius.only(
+          topRight: Radius.circular(8.0),
+          bottomLeft: Radius.circular(8.0),
+          bottomRight: Radius.circular(8.0),
         ),
-        child: Text(
-          text,
-          style: const TextStyle(fontSize: 15),
-        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: Offset(0, 3), // changes position of shadow
+          ),
+        ],
       ),
-    );
-  }
+      child: Text.rich(
+        TextSpan(children: <TextSpan>[
+          TextSpan(
+              text: '$author\n',
+              style: TextStyle(fontSize: 15, color: Colors.white)),
+          TextSpan(text: msg, style: TextStyle(fontSize: 15))
+        ]),
+      ),
+    ),
+  );
+}
 
+Widget buildOwnChatBubble(
+    BuildContext context, String author, String msg, Color color) {
+  return Align(
+    alignment: Alignment.centerRight,
+    child: Container(
+      padding:
+          const EdgeInsets.only(left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
+      margin: const EdgeInsets.symmetric(vertical: 7.0),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(8.0),
+          bottomLeft: Radius.circular(8.0),
+          bottomRight: Radius.circular(8.0),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: Offset(0, 3), // changes position of shadow
+          ),
+        ],
+      ),
+      child: Text.rich(
+        TextSpan(children: <TextSpan>[
+          TextSpan(
+              text: '$author\n',
+              style: TextStyle(fontSize: 15, color: Colors.white)),
+          TextSpan(text: msg, style: TextStyle(fontSize: 15))
+        ]),
+      ),
+    ),
+  );
+}
+
+Widget buildChatBubble(BuildContext context, String author, String msg) {
+  // TODO logic when logged in which chat bubble to return
+  if (author == "flutter") {
+    const col = Color.fromARGB(255, 133, 206, 110);
+    return buildOwnChatBubble(context, author, msg, col);
+  } else {
+    const col = const Color.fromARGB(255, 94, 182, 255);
+    return buildChatMateBubble(context, author, msg, col);
+  }
+}
 
 class chatMessages extends StatefulWidget {
   const chatMessages({super.key});
