@@ -4,6 +4,7 @@ from asgiref.sync import async_to_sync
 from .models import *
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
+import time         # TODO remove
 
 
 NR_LOADED_MESSAGES = 20        # TODO put this in some suitable centralized place
@@ -45,6 +46,7 @@ class ChatConsumer(WebsocketConsumer):
         }))
 
         for msg in messages[::-1]:      # reverse order?
+            # time.sleep(0.01)
             text = msg.message
             author = msg.author
             msg_dic = {

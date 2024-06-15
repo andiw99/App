@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'dart:convert';
+import 'package:tuple/tuple.dart';
 
 void main() {
   runApp(const MyApp());
@@ -220,8 +221,7 @@ class ChatFormState extends State<ChatForm> {
   //
   // Note: This is a `GlobalKey<FormState>`,
   // not a GlobalKey<MyCustomFormState>.
-  List<String> messages = [
-  ]; // messages as empty list
+  List<Tuple2<String, String>> messages = []; // messages as empty list
   final _formKey = GlobalKey<FormState>();
 
   // Build a Form widget using the _formKey created above.
@@ -232,8 +232,32 @@ class ChatFormState extends State<ChatForm> {
   // Okay I think this guy is just used in the _sendMessage method to get and format the data of the form
   final TextEditingController _controller = TextEditingController();
 
+
+  ChatFormState() {
+    // This is a constructor so that i make sure that _channel is initialized before I am going to use it.
+    // TODO I think I cant use _channel?  Everytime i get the error 'each child must be laid out exactly once'
+    // which makes absolutely no sense for me If i just initialize something in the constructor
+    StreamSubscription _sub = WebSocketChannel.connect(Uri.parse(
+      'ws://192.168.178.96:8000/ws/socket-server/')).stream.listen((value) {
+        // This catches every message now
+        print("Inside sub: ");
+        print(value);
+        // if (value.hasData) in contrast to inside the streambuilder, this is just a string
+        final jsonMessage = jsonDecode(value) as Map<String, dynamic>; 
+        if (jsonMessage['type'] == 'chat') {
+            setState(() {
+            messages.add(Tuple2(
+            jsonMessage['author'],
+            jsonMessage['message']));
+            });
+        }      
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Streambuilder misses some messages if they are sent concurrent, this is not good so I need to somehow manually listen to the incoming messages
+
     return Scaffold(
       body: Column(
         children: <Widget>[
@@ -246,29 +270,25 @@ class ChatFormState extends State<ChatForm> {
               return null;
             },
           ), */
-          Form(
-            key: _formKey,
-            child: TextFormField(
-              decoration: const InputDecoration(labelText: 'Send a message'),
-              controller: _controller,
-            ),
-          ),
-          const SizedBox(height: 24),
-          StreamBuilder( 
+/*             StreamBuilder(
             // This will later be displaying incoming messages (I think?)
             stream: _channel.stream,
             builder: (context, snapshot) {
               // okay could i build something here that displays the messages nice? Like another widget? makes this sense to construct another widget all the time it receives a message?
-              print(snapshot);
+              /* print(snapshot);
               print(snapshot.hasData);
               print(snapshot.data);
-              print(snapshot.data.runtimeType);
-              if(snapshot.hasData) {
-                final jsonMessage = jsonDecode(snapshot.data) as Map<String, dynamic>; // I again dont really get the meaning of final, it means it can be empty at first but as soon as it is set it cannot be changed? but the second time I run this build method it will be overwritten anyway?
-                messages.add(jsonMessage['message']);
-              }
+              print(snapshot.data.runtimeType); */
+              // since the listening is now done by the _sub, we dont need
+/*               if (snapshot.hasData) {
+                final jsonMessage = jsonDecode(snapshot.data) as Map<String,
+                    dynamic>; // I again dont really get the meaning of final, it means it can be empty at first but as soon as it is set it cannot be changed? but the second time I run this build method it will be overwritten anyway?
+                messages.add(Tuple2(
+                    jsonMessage['author'],
+                    jsonMessage[
+                        'message'])); // We add a tuple of author and message?
+              } */
               print("messages.length = ${messages.length}");
-              //return Text("wtf");
               return ListView.builder(
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
@@ -276,17 +296,46 @@ class ChatFormState extends State<ChatForm> {
                   itemBuilder: (BuildContext context, int index) {
                     return Container(
                       height: 40,
-                      child: Center(child: Text('${messages[index]}')),
+                      child: Center(
+                          child: Text(
+                              '${messages[index].item1}: ${messages[index].item2}')),
                     );
                   });
             },
+          ), */
+          Expanded(
+            child: ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    reverse: true,        
+                    itemCount: messages.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Container(
+                        height: 50,
+                        // padding: const EdgeInsets.all(0.0),
+                        margin:  const EdgeInsets.only(left: 10.0, right: 10.0 ),
+                        child: Container(
+                            child: buildChatBubble(context, '${messages[messages.length - index - 1].item1}: ${messages[messages.length - index - 1].item2}', Colors.blue)// Text(
+                                // '${messages[messages.length - index - 1].item1}: ${messages[messages.length - index - 1].item2}'),
+                        ),
+                      );
+                    }),
+          ),
+          const SizedBox(height: 24),
+          
+          Form(
+            key: _formKey,
+            child: TextFormField(
+              decoration: const InputDecoration(labelText: 'Send a message'),
+              controller: _controller,
+            ),
           ),
           ElevatedButton(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
-                ScaffoldMessenger.of(context).showSnackBar(
+/*                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Processing Data')),
-                );
+                ); */
                 _sendMessage();
               }
             },
@@ -301,12 +350,8 @@ class ChatFormState extends State<ChatForm> {
     if (_controller.text.isNotEmpty) {
       await _channel.ready;
       var controllertext = _controller.text;
-      var jsonMessage = jsonEncode(
-        {
-          'author' : 'flutter',
-          'message' : controllertext
-        }
-      );
+      var jsonMessage =
+          jsonEncode({'author': 'flutter', 'message': controllertext});
       _channel.sink.add(jsonMessage); // this should directly send the message?
       print("_sendMessage method called");
 
@@ -314,6 +359,33 @@ class ChatFormState extends State<ChatForm> {
     }
   }
 }
+
+Widget buildChatBubble(BuildContext context, String text, Color color) {
+    return Align(
+      alignment: Alignment.topLeft,
+      child: Container(
+        padding: EdgeInsets.all(10.0),
+        margin: EdgeInsets.symmetric(vertical: 0.0),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(5.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 1,
+              blurRadius: 5,
+              offset: Offset(0, 3), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(fontSize: 15),
+        ),
+      ),
+    );
+  }
+
 
 class chatMessages extends StatefulWidget {
   const chatMessages({super.key});
