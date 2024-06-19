@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:chatapp_frontend/components/chatbubble.dart';
+import 'package:chatapp_frontend/pages/loginpage.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -20,15 +22,7 @@ class ChatPage extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body: ChatForm(),
-      /* Center(
-        child: ElevatedButton(
-          onPressed: () {
-            print("This button will on press do some logic that sends a text message");
-          },
-          child: const Text('Send'),
-        ),
-      ), */
+      body: ChatForm(), // TODO one would probably divide the chat-log and the chat-form in two seperate Statfulwidgets, it is currently one
     );
   }
 }
@@ -56,7 +50,9 @@ class ChatFormState extends State<ChatForm> {
   // Build a Form widget using the _formKey created above.
   // If i build the widget here, should I connect to the websocket here?
   final _channel = WebSocketChannel.connect(Uri.parse(
-      'ws://192.168.178.96:8000/ws/socket-server/')); // This is the adress of the chat endpoint of Django (obviously only locally at the moment)
+      'ws://192.168.178.96:8000/ws/socket-server/',
+      ),
+      protocols: ['headers: ']); // This is the adress of the chat endpoint of Django (obviously only locally at the moment)
   // print(_channel);
   // Okay I think this guy is just used in the _sendMessage method to get and format the data of the form
   final TextEditingController _controller = TextEditingController();
@@ -97,51 +93,9 @@ class ChatFormState extends State<ChatForm> {
     // Streambuilder misses some messages if they are sent concurrent, this is not good so I need to somehow manually listen to the incoming messages
 
     return Scaffold(
+      backgroundColor: Colors.grey[300],
       body: Column(
         children: <Widget>[
-/*           TextFormField(
-            // The validator receives the text that the user has entered.
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter some text';
-              }
-              return null;
-            },
-          ), */
-/*             StreamBuilder(
-            // This will later be displaying incoming messages (I think?)
-            stream: _channel.stream,
-            builder: (context, snapshot) {
-              // okay could i build something here that displays the messages nice? Like another widget? makes this sense to construct another widget all the time it receives a message?
-              /* print(snapshot);
-              print(snapshot.hasData);
-              print(snapshot.data);
-              print(snapshot.data.runtimeType); */
-              // since the listening is now done by the _sub, we dont need
-/*               if (snapshot.hasData) {
-                final jsonMessage = jsonDecode(snapshot.data) as Map<String,
-                    dynamic>; // I again dont really get the meaning of final, it means it can be empty at first but as soon as it is set it cannot be changed? but the second time I run this build method it will be overwritten anyway?
-                messages.add(Tuple2(
-                    jsonMessage['author'],
-                    jsonMessage[
-                        'message'])); // We add a tuple of author and message?
-              } */
-              print("messages.length = ${messages.length}");
-              return ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: messages.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Container(
-                      height: 40,
-                      child: Center(
-                          child: Text(
-                              '${messages[index].item1}: ${messages[index].item2}')),
-                    );
-                  });
-            },
-          ), */
-
           Expanded(
             child: Stack(
               fit: StackFit.expand,
@@ -164,11 +118,9 @@ class ChatFormState extends State<ChatForm> {
                         //height: _bubbleHeight(),
                         // padding: const EdgeInsets.all(0.0),
                         margin: const EdgeInsets.only(left: 10.0, right: 25.0),
-                        child: buildChatBubble(
-                            context,
-                            messages[messages.length - index - 1].item1,
-                            messages[messages.length - index - 1]
-                                .item2), // Text(
+                        child: Chatbubble(                            
+                            author: messages[messages.length - index - 1].item1,
+                            msg: messages[messages.length - index - 1].item2), // Text(
                         // '${messages[messages.length - index - 1].item1}: ${messages[messages.length - index - 1].item2}'),
                       );
                     }
@@ -187,10 +139,10 @@ class ChatFormState extends State<ChatForm> {
           ),
           //const SizedBox(height: 4),
           Container(
-            margin: const EdgeInsets.all(2.0),
-            decoration: BoxDecoration(
+            //margin: const EdgeInsets.symmetric(horizontal: 2.0),
+            decoration: const BoxDecoration(
               color: Colors.blue,
-              borderRadius: BorderRadius.circular(10.0),
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
             ),
             child: Row(
               children: [
@@ -237,11 +189,6 @@ class ChatFormState extends State<ChatForm> {
     );
   }
 
-  double _bubbleHeight() {
-    // logic for the size of the chatbubble, somehow we need to know if the message will be in two lines
-    return 50;
-  }
-
   void _sendMessage() async {
     if (_controller.text.isNotEmpty) {
       await _channel.ready;
@@ -285,88 +232,5 @@ class ChatFormState extends State<ChatForm> {
       }
       _isLoading = false;
     });
-  }
-}
-
-Widget buildChatMateBubble(
-    BuildContext context, String author, String msg, Color color) {
-  return Align(
-    alignment: Alignment.centerLeft,
-    child: Container(
-      padding:
-          const EdgeInsets.only(left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
-      margin: const EdgeInsets.symmetric(vertical: 7.0),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: const BorderRadius.only(
-          topRight: Radius.circular(8.0),
-          bottomLeft: Radius.circular(8.0),
-          bottomRight: Radius.circular(8.0),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: Offset(0, 3), // changes position of shadow
-          ),
-        ],
-      ),
-      child: Text.rich(
-        TextSpan(children: <TextSpan>[
-          TextSpan(
-              text: '$author\n',
-              style: TextStyle(fontSize: 15, color: Colors.white)),
-          TextSpan(text: msg, style: TextStyle(fontSize: 15))
-        ]),
-      ),
-    ),
-  );
-}
-
-Widget buildOwnChatBubble(
-    BuildContext context, String author, String msg, Color color) {
-  return Align(
-    alignment: Alignment.centerRight,
-    child: Container(
-      padding:
-          const EdgeInsets.only(left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
-      margin: const EdgeInsets.symmetric(vertical: 7.0),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(8.0),
-          bottomLeft: Radius.circular(8.0),
-          bottomRight: Radius.circular(8.0),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: Offset(0, 3), // changes position of shadow
-          ),
-        ],
-      ),
-      child: Text.rich(
-        TextSpan(children: <TextSpan>[
-          TextSpan(
-              text: '$author\n',
-              style: TextStyle(fontSize: 15, color: Colors.white)),
-          TextSpan(text: msg, style: TextStyle(fontSize: 15))
-        ]),
-      ),
-    ),
-  );
-}
-
-Widget buildChatBubble(BuildContext context, String author, String msg) {
-  // TODO logic when logged in which chat bubble to return
-  if (author == "flutter") {
-    const col = Color.fromARGB(255, 133, 206, 110);
-    return buildOwnChatBubble(context, author, msg, col);
-  } else {
-    const col = const Color.fromARGB(255, 94, 182, 255);
-    return buildChatMateBubble(context, author, msg, col);
   }
 }

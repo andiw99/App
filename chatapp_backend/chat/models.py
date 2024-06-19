@@ -6,6 +6,7 @@ from django.utils import timezone
 
 class ChatGroup(models.Model):
     name = models.CharField(max_length=128)        # unique = True would ensure that only one group with the same name property exists, but I dont think I want that
+    subscribers = models.ManyToManyField(User)      # A chatgroup can have multiple subscribers, a user can be in multiple chatgroups
 
     def __str__(self):
         return self.name            # just repjresentation stuff for admin view (or in console probably)

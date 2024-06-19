@@ -40,3 +40,11 @@ def getChatMessages(request):
     # Now we can use the serializer to convert these python objects to json data
     serializer = ChatMessageSerializer(messages, many=True)         # many=True because we serialize multiple messages 
     return Response(serializer.data)
+
+@api_view(['GET', 'POST'])
+def getAuthentication(request):
+    print(request.user)
+    
+    serializer = AuthorSerializer(request.user)
+
+    return Response(serializer.data)
