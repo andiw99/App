@@ -76,10 +76,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   // TODO is this the most efficient way to navigate?
+
   final List<Widget> _pages = [
     const MyHomePage(title: "Best App ever, rerouted"),
     const ChatPage(),
-    LoginPage(),
+    LoginPage(logout: token.isNotEmpty),
   ];
   // TODO At the moment this does not even need to be a stateful widget
   @override
@@ -110,19 +111,19 @@ class _MyHomePageState extends State<MyHomePage> {
                     );
           });
         },
-         destinations: const <Widget>[
-          NavigationDestination(
+         destinations: <Widget>[
+          const NavigationDestination(
             selectedIcon: Icon(Icons.home),
             icon: Icon(Icons.home_outlined),
             label: 'Home',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.messenger_sharp),
             label: 'Chatroom',
           ),
           NavigationDestination(
-            icon: Icon(Icons.lock),
-            label: 'Login',
+            icon: token.isEmpty ? const Icon(Icons.lock) : const Icon(Icons.logout),
+            label: token.isEmpty ? 'Login' : "Logout",
           ),
         ],
       ),

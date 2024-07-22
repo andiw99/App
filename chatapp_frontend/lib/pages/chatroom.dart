@@ -50,10 +50,9 @@ class ChatFormState extends State<ChatForm> {
   // Build a Form widget using the _formKey created above.
   // If i build the widget here, should I connect to the websocket here?
   final _channel = WebSocketChannel.connect(Uri.parse(
-      'ws://192.168.178.96:8000/ws/socket-server/',
+      'ws://192.168.178.96:8000/ws/socket-server/',                  // This is the adress of the chat endpoint of Django (obviously only locally at the moment)
       ),
-      protocols: ['headers: ']); // This is the adress of the chat endpoint of Django (obviously only locally at the moment)
-  // print(_channel);
+      protocols: ["connectProtocol", "Token $token"]);     // connectProtocol should actually the subprotocol that client and server can agree on. I dont think it has relevance here
   // Okay I think this guy is just used in the _sendMessage method to get and format the data of the form
   final TextEditingController _controller = TextEditingController();
   // To retrieve bunches of messages I think it will be better to send one http request instead of doing this over websocket
@@ -69,10 +68,7 @@ class ChatFormState extends State<ChatForm> {
     // TODO I think I cant use _channel?  Everytime i get the error 'each child must be laid out exactly once'
     // which makes absolutely no sense for me If i just initialize something in the constructor
     // TODO is it even sensible to retrieve the initial chat messages via websocket? Or should I just do an asynchronous HTTP request?
-    StreamSubscription sub = WebSocketChannel.connect(
-            Uri.parse('ws://192.168.178.96:8000/ws/socket-server/'))
-        .stream
-        .listen((value) {
+    StreamSubscription subb = _channel.stream.listen((value) {
       // This catches every message now
       // if (value.hasData) in contrast to inside the streambuilder, this is just a string
       final jsonMessage = jsonDecode(value) as Map<String, dynamic>;
@@ -82,6 +78,18 @@ class ChatFormState extends State<ChatForm> {
         });
       }
     });
+
+/*     StreamSubscription sub = WebSocketChannel.connect(
+            Uri.parse('ws://192.168.178.96:8000/ws/socket-server/')).stream.listen((value) {
+      // This catches every message now
+      // if (value.hasData) in contrast to inside the streambuilder, this is just a string
+      final jsonMessage = jsonDecode(value) as Map<String, dynamic>;
+      if (jsonMessage['type'] == 'chat') {
+        setState(() {
+          messages.add(Tuple2(jsonMessage['author'], jsonMessage['message']));
+        });
+      }
+    }); */
 
     // Here we will specify what the scrollcontroller will do
     _scrollController.addListener(

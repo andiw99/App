@@ -17,9 +17,12 @@ class ChatConsumer(WebsocketConsumer):
 
     def connect(self):
         print(self.scope['headers'])
-
+        print("#####\n#####\n#####")
+        print(self.scope["subprotocols"])
         headers = dict(self.scope['headers'])
+        print("#####\n#####\n#####")
         print(headers)
+        print("#####\n#####\n#####")
         for key in headers:
             print(key, "  ", headers[key])
 
@@ -27,6 +30,7 @@ class ChatConsumer(WebsocketConsumer):
             print(key, "   ", self.scope[key])
 
         user = self.scope['user']
+        print(user)
 
         login(self.scope, user)     # I am at the moment not sure if this is even useful? But we can get the user here and we can see if this user is alleged to join this chatroom
         # save the session (if the session backend does not access the db you can use `sync_to_async`)
@@ -42,8 +46,11 @@ class ChatConsumer(WebsocketConsumer):
         # in production these should also be saved on the device that is running the app so one can look at the chats without service? (internet connection) 
         # so we get the latest messages here. First, get the specific group instance
         self.chat_group = get_object_or_404(ChatGroup, name=db_group_name)        # the thing is, if we identify the chat group by its name it should be unique or it is ambiguous which group we want here
-        if user not in self.chat_group.subscribers:
-            return          # TODO we just return here for now, later we might should add a message like 'not logged in' or 'no authorization for this chatroom'
+        if user in self.chat_group.subscribers.all():
+            self.accept()       # This accept should in production probably only be invoked if the user is authorized to enter the chatroom. Makes me wonder how this will work eventually at all as Flutter and Django a basically decoupled and we only send json objects. Will this be some public/private key stuff? Anyway, this is a problem for future andi and I mean this has to work somehow
+        else:
+            print("You, good sir, are NOT logged in (or not authorized to view this chat)")
+            self.close()          # TODO we just return here for now, later we might should add a message like 'not logged in' or 'no authorization for this chatroom'
 
 
         # so I think channel_layer.group_add(self.room..., self.channel) adds the channel of this consumer to the specified group, basically saying, this chat consumer is now in this chat group
@@ -55,7 +62,6 @@ class ChatConsumer(WebsocketConsumer):
             self.channel_name
         )
         
-        self.accept()       # This accept should in production probably only be invoked if the user is authorized to enter the chatroom. Makes me wonder how this will work eventually at all as Flutter and Django a basically decoupled and we only send json objects. Will this be some public/private key stuff? Anyway, this is a problem for future andi and I mean this has to work somehow
 
         # TODO get group idetifier from URL / request and have it unique (every DB element has a primary key(pk) but what was the reason one had not to use it?)  
         # From the group we can get the messages by

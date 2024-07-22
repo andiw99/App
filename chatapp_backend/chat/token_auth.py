@@ -12,7 +12,7 @@ def get_user(token_key):
         return AnonymousUser()
 
 
-class TokenAuthMiddleware:
+class TokenAuthMiddlewareHeader:
     """
     Token authorization middleware for Django Channels 2
     """
@@ -24,9 +24,35 @@ class TokenAuthMiddleware:
     async def __call__(self, scope, receive, send):
         headers = dict(scope['headers'])
         if b'authorization' in headers:
+            #print("\n\n\n")
+            #print(headers[b'authorization'])
+            #print(type(headers[b'authorization']))
+            #print("\n\n\n")
             token_name, token_key = headers[b'authorization'].decode().split()
             user = await get_user(token_key)
             scope['user'] = user
         return await self.app(scope, receive, send)
     
-TokenAuthMiddlewareStack = lambda inner: TokenAuthMiddleware(AuthMiddlewareStack(inner))
+class TokenAuthMiddlewareProtocol:
+    """
+    Token authorization middleware for Django Channels 2
+    """
+
+    def __init__(self, app):
+        # Store the ASGI application we were passed
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        protocols = scope['subprotocols']
+        for protocol in protocols:
+            #print(f"\n\n\n {protocol.split()} \n\n\n")            
+            if protocol[:5] == "Token":
+                try:
+                    token_name, token_key = protocol.split()
+                    user = await get_user(token_key)
+                except ValueError:
+                    user = AnonymousUser()
+                scope['user'] = user
+        return await self.app(scope, receive, send)
+    
+TokenAuthMiddlewareStack = lambda inner: TokenAuthMiddlewareProtocol(AuthMiddlewareStack(inner))
