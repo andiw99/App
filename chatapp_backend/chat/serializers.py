@@ -16,3 +16,9 @@ class ChatMessageSerializer(ModelSerializer):
         model = ChatMessage
         fields = '__all__'
         depth = 1
+
+
+class ChatGroupSerializer(ModelSerializer):
+    class Meta:
+        model = ChatGroup
+        fields = ['id', 'name']

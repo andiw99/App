@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from .models import *
 from .consumers import NR_LOADED_MESSAGES
@@ -22,8 +24,10 @@ def getLobby(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def getChatMessages(request):
     # TODO IMPORTANT WE NEED SOME KIND OF VERIFICATION HERE, IF ANYONE CAN SEND THIS REQUEST, CHATROOMS WOULD BE PUBLIC
+    # TODO is this done through IsAuthenticated or does this do nothing?
     group = get_object_or_404(ChatGroup, name="Best Group") # TODO dynamic resolve of group name
     # I think we will have to send some stuff with the request to see which messages should be loaded
     nr_existing_messages = request.GET.get('em')    # this will for sure be a string? Conversion of string to int unsafe?
@@ -41,10 +45,25 @@ def getChatMessages(request):
     serializer = ChatMessageSerializer(messages, many=True)         # many=True because we serialize multiple messages 
     return Response(serializer.data)
 
+
 @api_view(['GET', 'POST'])
 def getAuthentication(request):
     print(request.user)
     
     serializer = AuthorSerializer(request.user)
+
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def getChatrooms(request):
+    # Alright, so we need to login the user or is it automatically logged in if the authentication works right?
+    # Is it now using this TokenAuthMiddleWarestack or not?
+    # supposed it already works, 
+    user = request.user
+    print(f"User: {user}")
+    chatgroups = user.chatgroup_set.all()
+    serializer = ChatGroupSerializer(chatgroups, many=True)
 
     return Response(serializer.data)

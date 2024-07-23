@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'package:tuple/tuple.dart';
 import 'package:http/http.dart' as http;
 import 'pages/chatroom.dart';
+import 'pages/chats.dart';
 
 void main() {
   runApp(const MyApp());
@@ -79,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<Widget> _pages = [
     const MyHomePage(title: "Best App ever, rerouted"),
-    const ChatPage(),
+    const ChatsPage(),
     LoginPage(logout: token.isNotEmpty),
   ];
   // TODO At the moment this does not even need to be a stateful widget
@@ -119,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           const NavigationDestination(
             icon: Icon(Icons.messenger_sharp),
-            label: 'Chatroom',
+            label: 'Chats',
           ),
           NavigationDestination(
             icon: token.isEmpty ? const Icon(Icons.lock) : const Icon(Icons.logout),
