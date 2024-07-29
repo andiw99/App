@@ -31,6 +31,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['192.168.178.96']
 
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -46,6 +47,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken'
 ]
+
+# Set the user that is used for authentication?
+AUTH_USER_MODEL = 'chat.MyUser'
 
 ASGI_APPLICATION = 'chatapp_backend.asgi.application'
 

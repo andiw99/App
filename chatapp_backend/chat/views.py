@@ -67,3 +67,19 @@ def getChatrooms(request):
     serializer = ChatGroupSerializer(chatgroups, many=True)
 
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def getChatrooms(request):
+    # Alright, so we need to login the user or is it automatically logged in if the authentication works right?
+    # Is it now using this TokenAuthMiddleWarestack or not?
+    # supposed it already works, 
+    user = request.user
+    print(f"User: {user}")
+    chatgroups = user.friends_set.all()
+    serializer = FriendsSerializer(chatgroups, many=True)
+
+    return Response(serializer.data)
+

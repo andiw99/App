@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:chatapp_frontend/components/chatbubble.dart';
+import 'package:chatapp_frontend/main.dart';
 import 'package:chatapp_frontend/pages/loginpage.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -8,12 +9,13 @@ import 'dart:convert';
 import 'package:tuple/tuple.dart';
 import 'package:http/http.dart' as http;
 
-
 class ChatPage extends StatelessWidget {
-  const ChatPage({super.key});
+  final String roomIdentifier;
+  const ChatPage({super.key, required this.roomIdentifier});
 
   @override
   Widget build(BuildContext context) {
+    print("Building ChatPage, roomIdentifier = $roomIdentifier");
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue[400],
@@ -22,13 +24,16 @@ class ChatPage extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body: ChatForm(), // TODO one would probably divide the chat-log and the chat-form in two seperate Statfulwidgets, it is currently one
+      body: ChatForm(
+          roomIdentifier:
+              roomIdentifier), // TODO one would probably divide the chat-log and the chat-form in two seperate Statfulwidgets, it is currently one
     );
   }
 }
 
 class ChatForm extends StatefulWidget {
-  const ChatForm({super.key});
+  final String roomIdentifier;
+  const ChatForm({super.key, required this.roomIdentifier});
 
   @override
   ChatFormState createState() {
@@ -48,11 +53,6 @@ class ChatFormState extends State<ChatForm> {
   final _formKey = GlobalKey<FormState>();
 
   // Build a Form widget using the _formKey created above.
-  // If i build the widget here, should I connect to the websocket here?
-  final _channel = WebSocketChannel.connect(Uri.parse(
-      'ws://192.168.178.96:8000/ws/socket-server/',                  // This is the adress of the chat endpoint of Django (obviously only locally at the moment)
-      ),
-      protocols: ["connectProtocol", "Token $token"]);     // connectProtocol should actually the subprotocol that client and server can agree on. I dont think it has relevance here
   // Okay I think this guy is just used in the _sendMessage method to get and format the data of the form
   final TextEditingController _controller = TextEditingController();
   // To retrieve bunches of messages I think it will be better to send one http request instead of doing this over websocket
@@ -62,8 +62,23 @@ class ChatFormState extends State<ChatForm> {
   // scrollcontroller will be used to detect if the user scrolled to the end of the chat to load new messages
   final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
+  late WebSocketChannel _channel;
 
-  ChatFormState() {
+  @override
+  void initState() {
+    super.initState();
+    // Streambuilder misses some messages if they are sent concurrent, this is not good so I need to somehow manually listen to the incoming messages
+// If i build the widget here, should I connect to the websocket here?
+    // URL
+    // uri = 'ws://192.168.178.96:8000/ws/socket-server/';
+    final uri =
+        'ws://192.168.178.96:8000/ws/socket-server/?chatroom=${widget.roomIdentifier}';
+    print(
+        "Connecting with querystring and roomidentifier ${widget.roomIdentifier}");
+    _channel = WebSocketChannel.connect(Uri.parse(uri), protocols: [
+      "connectProtocol",
+      "Token $token"
+    ]); // connectProtocol should actually the subprotocol that client and server can agree on. I dont think it has relevance here
     // This is a constructor so that i make sure that _channel is initialized before I am going to use it.
     // TODO I think I cant use _channel?  Everytime i get the error 'each child must be laid out exactly once'
     // which makes absolutely no sense for me If i just initialize something in the constructor
@@ -78,7 +93,10 @@ class ChatFormState extends State<ChatForm> {
         });
       }
     });
+  }
 
+  @override
+  Widget build(BuildContext context) {
 /*     StreamSubscription sub = WebSocketChannel.connect(
             Uri.parse('ws://192.168.178.96:8000/ws/socket-server/')).stream.listen((value) {
       // This catches every message now
@@ -94,12 +112,6 @@ class ChatFormState extends State<ChatForm> {
     // Here we will specify what the scrollcontroller will do
     _scrollController.addListener(
         _onScroll); // the listener listens to every change (kind of inefficient or the only way?) And then triggers the _onscroll function
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // Streambuilder misses some messages if they are sent concurrent, this is not good so I need to somehow manually listen to the incoming messages
-
     return Scaffold(
       backgroundColor: Colors.grey[300],
       body: Column(
@@ -126,9 +138,10 @@ class ChatFormState extends State<ChatForm> {
                         //height: _bubbleHeight(),
                         // padding: const EdgeInsets.all(0.0),
                         margin: const EdgeInsets.only(left: 10.0, right: 25.0),
-                        child: Chatbubble(                            
+                        child: Chatbubble(
                             author: messages[messages.length - index - 1].item1,
-                            msg: messages[messages.length - index - 1].item2), // Text(
+                            msg: messages[messages.length - index - 1]
+                                .item2), // Text(
                         // '${messages[messages.length - index - 1].item1}: ${messages[messages.length - index - 1].item2}'),
                       );
                     }
@@ -150,7 +163,9 @@ class ChatFormState extends State<ChatForm> {
             //margin: const EdgeInsets.symmetric(horizontal: 2.0),
             decoration: const BoxDecoration(
               color: Colors.blue,
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0)),
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(10.0),
+                  topRight: Radius.circular(10.0)),
             ),
             child: Row(
               children: [
@@ -229,13 +244,23 @@ class ChatFormState extends State<ChatForm> {
     });
 
     // TODO in the future, this URL somehow needs to be build from the chatroom we are currently in
-    var retrieveURL = Uri.parse('http://192.168.178.96:8000/getChatMessages/?em=${messages.length}');
+    var retrieveURL = Uri.parse(
+        'http://192.168.178.96:8000/getChatMessages/?em=${messages.length}');
     List response = jsonDecode((await client.get(
-      retrieveURL)).body);      // TODO in a get request you can send headers, you probably need to handle the authorization with this
-    await Future.delayed(Duration(milliseconds: 700));  // TODO remove just makes the feeling a little bit more real
+      retrieveURL,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Token $token'
+      },
+    ))
+        .body); // TODO in a get request you can send headers, you probably need to handle the authorization with this
+    await Future.delayed(const Duration(
+        milliseconds:
+            700)); // TODO remove just makes the feeling a little bit more real
     setState(() {
       for (final msg in response) {
-        Tuple2<String, String> tup = Tuple2(msg['author']['username'], msg['message']);
+        Tuple2<String, String> tup =
+            Tuple2(msg['author']['username'], msg['message']);
         messages.insert(0, tup);
       }
       _isLoading = false;

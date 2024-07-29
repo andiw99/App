@@ -9,6 +9,10 @@ import 'package:tuple/tuple.dart';
 import 'package:http/http.dart' as http;
 import 'pages/chatroom.dart';
 import 'pages/chats.dart';
+import 'pages/friends.dart';
+
+String token = "";      // TODO this is placeholder for now for a token that is somewhere stored persistently
+String username = "";
 
 void main() {
   runApp(const MyApp());
@@ -81,6 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<Widget> _pages = [
     const MyHomePage(title: "Best App ever, rerouted"),
     const ChatsPage(),
+    const FriendsPage(),
     LoginPage(logout: token.isNotEmpty),
   ];
   // TODO At the moment this does not even need to be a stateful widget
@@ -121,6 +126,11 @@ class _MyHomePageState extends State<MyHomePage> {
           const NavigationDestination(
             icon: Icon(Icons.messenger_sharp),
             label: 'Chats',
+          ),
+          const NavigationDestination(
+            selectedIcon: Icon(Icons.home),
+            icon: Icon(Icons.group),
+            label: 'Friends',
           ),
           NavigationDestination(
             icon: token.isEmpty ? const Icon(Icons.lock) : const Icon(Icons.logout),

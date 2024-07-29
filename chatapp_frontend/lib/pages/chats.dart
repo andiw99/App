@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:core';
+import 'package:chatapp_frontend/main.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -45,12 +46,10 @@ class _ChatsPageState extends State<ChatsPage> {
                   //shrinkWrap: true,
                   itemCount: chatsMap.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return Container(
-                        //margin: const EdgeInsets.only(left: 10.0, right: 25.0),
-                        child: Chatslistentry(
-                          identifier: chatsEntries[index].key,
-                          name: chatsEntries[index].value,
-                        ));
+                    return Chatslistentry(
+                      identifier: chatsEntries[index].key,
+                      name: chatsEntries[index].value,
+                    );
                   },
                 ),
           ),

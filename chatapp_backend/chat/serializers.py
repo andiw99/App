@@ -22,3 +22,10 @@ class ChatGroupSerializer(ModelSerializer):
     class Meta:
         model = ChatGroup
         fields = ['id', 'name']
+
+
+class FriendsSerializer(ModelSerializer):
+    class Meta:
+        model = MyUser
+        fields = ['id', 'name']
+

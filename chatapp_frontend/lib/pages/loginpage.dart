@@ -6,9 +6,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 
-String token = "";      // TODO this is placeholder for now for a token that is somewhere stored persistently
-String username = "";
-
 class LoginPage extends StatefulWidget {
   bool logout;
   LoginPage({super.key, this.logout=false});

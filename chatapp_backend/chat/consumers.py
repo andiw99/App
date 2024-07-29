@@ -3,9 +3,11 @@ from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 from .models import *
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from .models import MyUser as User
 from channels.auth import login, logout
 import time         # TODO remove
+from urllib.parse import parse_qs
 
 
 NR_LOADED_MESSAGES = 20        # TODO put this in some suitable centralized place
@@ -16,13 +18,7 @@ class ChatConsumer(WebsocketConsumer):
         self.chat_group = None          # TODO is this safe? does it need to be a class attribute? Why did I do that?
 
     def connect(self):
-        print(self.scope['headers'])
-        print("#####\n#####\n#####")
-        print(self.scope["subprotocols"])
         headers = dict(self.scope['headers'])
-        print("#####\n#####\n#####")
-        print(headers)
-        print("#####\n#####\n#####")
         for key in headers:
             print(key, "  ", headers[key])
 
@@ -32,6 +28,14 @@ class ChatConsumer(WebsocketConsumer):
         user = self.scope['user']
         print(user)
 
+        print("\n\n\n")
+        print(self.scope["query_string"])
+        queryset = parse_qs(self.scope["query_string"].decode())
+        chatroom_identifier = int(queryset['chatroom'][0])       # because whyever parse_qs returns the identifier as a list containing 1 as string
+        print(f"Chatroom identifier = {chatroom_identifier}")
+        print(f"type {type(chatroom_identifier)}")
+        print("\n\n\n")
+
         login(self.scope, user)     # I am at the moment not sure if this is even useful? But we can get the user here and we can see if this user is alleged to join this chatroom
         # save the session (if the session backend does not access the db you can use `sync_to_async`)
         self.scope["session"].save()
@@ -40,12 +44,12 @@ class ChatConsumer(WebsocketConsumer):
         # print(headers["Authentication"])
         # 'Best Group' is name of first chatgroup that I created in the DB
         # I think it is useful / OK if the channel_layer group and the DB group have the same name?
-        self.room_group_name = "BestGroup"       # group name that would usually be a dynamic value from URL, basically on which chatroom the user clicked. Aaah doesn't really work because this group name does not allow spaces and stuff
-        db_group_name = "Best Group"    # So we have to get these two names somehow seperately (from the URL?) self.room_group_name needs to be unique definitely
-                # Instead of only sending connection status, we should also send the chat messages from the DB
+        
         # in production these should also be saved on the device that is running the app so one can look at the chats without service? (internet connection) 
         # so we get the latest messages here. First, get the specific group instance
-        self.chat_group = get_object_or_404(ChatGroup, name=db_group_name)        # the thing is, if we identify the chat group by its name it should be unique or it is ambiguous which group we want here
+        self.chat_group = get_object_or_404(ChatGroup, id=chatroom_identifier)        # the thing is, if we identify the chat group by its name it should be unique or it is ambiguous which group we want here
+        self.room_group_name = self.chat_group.name.replace(" ", "_")       # group name that would usually be a dynamic value from URL, basically on which chatroom the user clicked. Aaah doesn't really work because this group name does not allow spaces and stuff                # Instead of only sending connection status, we should also send the chat messages from the DB
+        print("chatroom group name = ", self.room_group_name)
         if user in self.chat_group.subscribers.all():
             self.accept()       # This accept should in production probably only be invoked if the user is authorized to enter the chatroom. Makes me wonder how this will work eventually at all as Flutter and Django a basically decoupled and we only send json objects. Will this be some public/private key stuff? Anyway, this is a problem for future andi and I mean this has to work somehow
         else:
