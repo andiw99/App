@@ -86,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
     const MyHomePage(title: "Best App ever, rerouted"),
     const ChatsPage(),
     const FriendsPage(),
-    LoginPage(logout: token.isNotEmpty),
+    LoginPage(logout: token.isNotEmpty),    // TODO somehow this doesnt work when I log out and log back in again
   ];
   // TODO At the moment this does not even need to be a stateful widget
   @override

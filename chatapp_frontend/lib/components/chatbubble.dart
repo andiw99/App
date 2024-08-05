@@ -1,3 +1,4 @@
+import 'package:chatapp_frontend/main.dart';
 import 'package:flutter/material.dart';
 
 
@@ -10,7 +11,7 @@ class Chatbubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-      if (author == "flutter") {
+      if (author == username) {
     const col = Color.fromARGB(255, 133, 206, 110);
     return _buildOwnChatBubble(context, author, msg, col);
   } else {

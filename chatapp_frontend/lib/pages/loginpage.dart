@@ -73,6 +73,8 @@ class _LoginPageState extends State<LoginPage> {
     print("Widget.logout: ${widget.logout}");
     if(widget.logout) {
       token = "";
+      // I think we need to reset logout then...
+      widget.logout = false;
     }
     if(token.isNotEmpty) {
       return const MyHomePage(title: "Best App ever after login");

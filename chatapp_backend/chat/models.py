@@ -4,7 +4,7 @@ from django.utils import timezone
 
 # Create your models here.
 class MyUser(AbstractUser):
-    friends = models.ManyToManyField("self")
+    friends = models.ManyToManyField("self", blank=True)
 
 class ChatGroup(models.Model):
     name = models.CharField(max_length=128)        # unique = True would ensure that only one group with the same name property exists, but I dont think I want that

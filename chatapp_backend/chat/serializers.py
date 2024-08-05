@@ -1,11 +1,10 @@
 from rest_framework.serializers import ModelSerializer
 from .models import *
-from django.contrib.auth.models import User
 
 
 class AuthorSerializer(ModelSerializer):
     class Meta:
-        model = User
+        model = MyUser
         fields = ['username']
 
 class ChatMessageSerializer(ModelSerializer):
@@ -27,5 +26,5 @@ class ChatGroupSerializer(ModelSerializer):
 class FriendsSerializer(ModelSerializer):
     class Meta:
         model = MyUser
-        fields = ['id', 'name']
+        fields = ['id', 'username']
 

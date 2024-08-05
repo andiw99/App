@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:chatapp_frontend/main.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -23,20 +25,30 @@ class _FriendsPageState extends State<FriendsPage> {
     super.initState();
     _retrieveFriends();
   }
+ 
 
   void _retrieveFriends() async {
     // Placeholder for the function to retrieve the list of friends
     // Replace this with your implementation to fetch friends
     var retrieveURL = Uri.parse('http://192.168.178.96:8000/get-friends/');
-    final response = await client.get(
-              retrieveURL,
-              headers: <String, String>{
-                'Content-Type': 'application/json; charset=UTF-8',
-                'Authorization': 'Token $token'
-              }, // I think the header was called authorization?
-              );
-    _friendsList = ['Alice', 'Bob', 'Charlie', 'David', 'Eve'];
-    _filteredFriendsList = _friendsList;
+    final response = jsonDecode((await client.get(
+            retrieveURL,
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+              'Authorization': 'Token $token'
+            }, // I think the header was called authorization?
+            )).body);
+    print(response);
+    List<String> receivedFriendsList = [];
+    for (final friend in response) {
+      receivedFriendsList.add(friend['username']);
+    }
+    setState(() {        
+        _friendsList = receivedFriendsList; //['Alice', 'Bob', 'Charlie', 'David', 'Eve'];
+       _filteredFriendsList = _friendsList;
+    });
+
+    
   }
 
   void _searchFriends(String query) {

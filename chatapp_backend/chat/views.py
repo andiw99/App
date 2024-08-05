@@ -28,10 +28,12 @@ def getLobby(request):
 def getChatMessages(request):
     # TODO IMPORTANT WE NEED SOME KIND OF VERIFICATION HERE, IF ANYONE CAN SEND THIS REQUEST, CHATROOMS WOULD BE PUBLIC
     # TODO is this done through IsAuthenticated or does this do nothing?
-    group = get_object_or_404(ChatGroup, name="Best Group") # TODO dynamic resolve of group name
+    group_identifier = int(request.GET.get('cr'))
+    group = get_object_or_404(ChatGroup, id=group_identifier) # TODO dynamic resolve of group name
     # I think we will have to send some stuff with the request to see which messages should be loaded
     nr_existing_messages = request.GET.get('em')    # this will for sure be a string? Conversion of string to int unsafe?
-    print(request.GET)
+    print("group:", group)
+    print("request.GET in getChatMessages = ", request.GET)
     # TODO is this fishy again?
     try:
         nr_existing_messages = int(nr_existing_messages)
@@ -41,6 +43,7 @@ def getChatMessages(request):
         nr_existing_messages = 0
     print("nr_existing_messages = ", nr_existing_messages)
     messages = group.chatmessage_set.all()[nr_existing_messages:NR_LOADED_MESSAGES + nr_existing_messages]
+    print("messages = ", messages)
     # Now we can use the serializer to convert these python objects to json data
     serializer = ChatMessageSerializer(messages, many=True)         # many=True because we serialize multiple messages 
     return Response(serializer.data)
@@ -72,14 +75,15 @@ def getChatrooms(request):
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-def getChatrooms(request):
+def getFriends(request):
     # Alright, so we need to login the user or is it automatically logged in if the authentication works right?
     # Is it now using this TokenAuthMiddleWarestack or not?
     # supposed it already works, 
     user = request.user
     print(f"User: {user}")
-    chatgroups = user.friends_set.all()
-    serializer = FriendsSerializer(chatgroups, many=True)
+    friends = user.friends.all()
+    print(friends)
+    serializer = FriendsSerializer(friends, many=True)
 
     return Response(serializer.data)
 

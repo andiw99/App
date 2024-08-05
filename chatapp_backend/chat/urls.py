@@ -8,5 +8,6 @@ urlpatterns = [
     path('getChatMessages/', views.getChatMessages, name="getChatMessages"),
     path('api-token-auth/', obtain_auth_token),
     path('get-authentication/', views.getAuthentication),
-    path('get-chats/', views.getChatrooms)
+    path('get-chats/', views.getChatrooms),
+    path('get-friends/', views.getFriends),
 ]

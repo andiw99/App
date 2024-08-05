@@ -217,7 +217,7 @@ class ChatFormState extends State<ChatForm> {
       await _channel.ready;
       var controllertext = _controller.text;
       var jsonMessage =
-          jsonEncode({'author': 'flutter', 'message': controllertext});
+          jsonEncode({'author': username, 'message': controllertext});
       _channel.sink.add(jsonMessage); // this should directly send the message?
       print("_sendMessage method called");
 
@@ -245,7 +245,7 @@ class ChatFormState extends State<ChatForm> {
 
     // TODO in the future, this URL somehow needs to be build from the chatroom we are currently in
     var retrieveURL = Uri.parse(
-        'http://192.168.178.96:8000/getChatMessages/?em=${messages.length}');
+        'http://192.168.178.96:8000/getChatMessages/?em=${messages.length}&cr=${widget.roomIdentifier}');
     List response = jsonDecode((await client.get(
       retrieveURL,
       headers: <String, String>{
@@ -259,6 +259,7 @@ class ChatFormState extends State<ChatForm> {
             700)); // TODO remove just makes the feeling a little bit more real
     setState(() {
       for (final msg in response) {
+        print(msg['author']['username'] +  msg['message']);
         Tuple2<String, String> tup =
             Tuple2(msg['author']['username'], msg['message']);
         messages.insert(0, tup);
