@@ -10,4 +10,5 @@ urlpatterns = [
     path('get-authentication/', views.getAuthentication),
     path('get-chats/', views.getChatrooms),
     path('get-friends/', views.getFriends),
+    path('create-group/', views.createGroup),
 ]

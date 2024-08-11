@@ -48,7 +48,7 @@ class ChatConsumer(WebsocketConsumer):
         # in production these should also be saved on the device that is running the app so one can look at the chats without service? (internet connection) 
         # so we get the latest messages here. First, get the specific group instance
         self.chat_group = get_object_or_404(ChatGroup, id=chatroom_identifier)        # the thing is, if we identify the chat group by its name it should be unique or it is ambiguous which group we want here
-        self.room_group_name = self.chat_group.name.replace(" ", "_")       # group name that would usually be a dynamic value from URL, basically on which chatroom the user clicked. Aaah doesn't really work because this group name does not allow spaces and stuff                # Instead of only sending connection status, we should also send the chat messages from the DB
+        self.room_group_name = self.chat_group.name.replace(" ", "_").replace(",", "_")       # group name that would usually be a dynamic value from URL, basically on which chatroom the user clicked. Aaah doesn't really work because this group name does not allow spaces and stuff                # Instead of only sending connection status, we should also send the chat messages from the DB
         print("chatroom group name = ", self.room_group_name)
         if user in self.chat_group.subscribers.all():
             self.accept()       # This accept should in production probably only be invoked if the user is authorized to enter the chatroom. Makes me wonder how this will work eventually at all as Flutter and Django a basically decoupled and we only send json objects. Will this be some public/private key stuff? Anyway, this is a problem for future andi and I mean this has to work somehow

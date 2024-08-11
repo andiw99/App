@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:chatapp_frontend/main.dart';
+import 'package:chatapp_frontend/pages/chatroom.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
@@ -70,11 +71,40 @@ class _FriendsPageState extends State<FriendsPage> {
     }
   }
 
+  Future<void> _startChat(String friendName) async {
+    // Placeholder for the function to start a chat
+    // Replace this with your implementation to start a new chat with the friend
+    print('Starting chat with $friendName');
+      var jsonMessage = {"users": friendName, "groupname": ""};
+      print(jsonMessage);      
+      // well we now have to send an http get? request to receive the token
+      var retrieveURL = Uri.parse('http://192.168.178.96:8000/create-group/');
+      var groupData = jsonDecode((await client.post(
+        retrieveURL,
+        headers: <String, String>{
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': 'Token $token'}, 
+        body: jsonMessage        
+      )).body) as Map<String, dynamic>;
+
+      print(groupData);
+
+      final identifier = groupData['id'];
+        Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => ChatPage(
+                roomIdentifier: identifier.toString(),
+              )),
+    );
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Friends'),
+        title: Text('Friends'),
       ),
       body: Column(
         children: [
@@ -84,7 +114,7 @@ class _FriendsPageState extends State<FriendsPage> {
               controller: _searchController,
               decoration: InputDecoration(
                 labelText: 'Search Friends',
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
@@ -96,12 +126,18 @@ class _FriendsPageState extends State<FriendsPage> {
           ),
           Expanded(
             child: _isSearching && _filteredFriendsList.isEmpty
-                ? const Center(child: Text('No friends found.'))
+                ? Center(child: Text('No friends found.'))
                 : ListView.builder(
                     itemCount: _filteredFriendsList.length,
                     itemBuilder: (context, index) {
                       return ListTile(
                         title: Text(_filteredFriendsList[index]),
+                        trailing: IconButton(
+                          icon: Icon(Icons.chat),
+                          onPressed: () {
+                            _startChat(_filteredFriendsList[index]);
+                          },
+                        ),
                       );
                     },
                   ),

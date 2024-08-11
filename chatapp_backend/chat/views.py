@@ -8,6 +8,9 @@ from django.shortcuts import get_object_or_404
 from .models import *
 from .consumers import NR_LOADED_MESSAGES
 from .serializers import *
+import json
+from .models import MyUser as User
+from .models import ChatGroup
 
 @api_view(['GET'])
 def getEndpoint(request):
@@ -87,3 +90,27 @@ def getFriends(request):
 
     return Response(serializer.data)
 
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def createGroup(request):
+    user = request.user
+    #print(request.body)
+    body = request.POST #json.loads(request.body)     # The request at this URL should send the usernames of the chat parnter and a name for the group
+    print(body)
+    user_strings = body.get('users').split(', ')
+    users = [user]
+    for username in user_strings:
+        # TODO check if user is friend to the ones he wants to chat to
+        users.append(get_object_or_404(User, username=username))
+
+    groupname = body.get('groupname')
+    if not groupname:
+        groupname = "Chat between " + ",".join(user_strings) + f", {user.username}"
+    
+    group = ChatGroup(name=groupname)    
+    group.save()    # create the group and save it to DB
+    group.subscribers.set(users)
+
+    return Response(ChatGroupSerializer(group).data)
