@@ -28,3 +28,9 @@ class FriendsSerializer(ModelSerializer):
         model = MyUser
         fields = ['id', 'username']
 
+class FriendrequestSerializer(ModelSerializer):
+    sender = AuthorSerializer()
+    
+    class Meta:
+        model = FriendRequest
+        fields = ["sender", "datetime"]

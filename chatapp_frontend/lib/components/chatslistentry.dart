@@ -5,9 +5,10 @@ import 'package:flutter/widgets.dart';
 class Chatslistentry extends StatelessWidget {
   final String identifier;
   final String name;
+  final Function? onTap;
 
   const Chatslistentry(
-      {super.key, required this.identifier, required this.name});
+      {super.key, required this.identifier, required this.name, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class Chatslistentry extends StatelessWidget {
             width: 1,
           ))),
       child: GestureDetector(
-        onTap: () => _onTap(context),
+        onTap: () => {onTap!()},
         child: Row(
           children: [
             const SizedBox(
@@ -31,18 +32,18 @@ class Chatslistentry extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(50.0),
               ),
-              width: 75,
-              height: 75,
+              width: 40,
+              height: 40,
               child: const Icon(
                 Icons.group,
-                size: 50,
+                size: 25,
               ),
             ),
             const SizedBox(
               width: 20,
             ),
             Container(
-              height: 100,
+              height: 70,
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -60,15 +61,16 @@ class Chatslistentry extends StatelessWidget {
     );
   }
 
-  void _onTap(BuildContext context) {
-    // this should then push the fitting chatroom page with navigator probably or not?
-    print("onTap called, identifier is $identifier");
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => ChatPage(
-                roomIdentifier: identifier,
-              )),
-    );
-  }
+  //void _onTap(BuildContext context) {
+  //  // this should then push the fitting chatroom page with navigator probably or not?
+  //  print("onTap called, identifier is $identifier");
+  //  Navigator.push(
+  //    context,
+  //    MaterialPageRoute(
+  //        builder: (context) => ChatPage(
+  //              roomIdentifier: identifier,
+  //              roomName: name,
+  //            )),
+  //  );
+  //}
 }

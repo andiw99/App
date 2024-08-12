@@ -11,7 +11,8 @@ import 'package:http/http.dart' as http;
 
 class ChatPage extends StatelessWidget {
   final String roomIdentifier;
-  const ChatPage({super.key, required this.roomIdentifier});
+  final String roomName;
+  const ChatPage({super.key, required this.roomIdentifier, this.roomName="Chatroom"});
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +20,8 @@ class ChatPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue[400],
-        title: const Text(
-          'Chatroom',
+        title:  Text(
+          roomName,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),

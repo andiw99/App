@@ -68,8 +68,8 @@ def getChatrooms(request):
     # Is it now using this TokenAuthMiddleWarestack or not?
     # supposed it already works, 
     user = request.user
-    print(f"User: {user}")
-    chatgroups = user.chatgroup_set.all()
+    #print(f"User: {user}")
+    chatgroups = user.chatgroup_set.all().order_by('-modified')
     serializer = ChatGroupSerializer(chatgroups, many=True)
 
     return Response(serializer.data)
@@ -90,6 +90,33 @@ def getFriends(request):
 
     return Response(serializer.data)
 
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def getFriendRequests(request):
+    user = request.user
+    
+    friendrequests = user.received_friendrequests.all().order_by('-datetime')
+    print(friendrequests)
+    serializer = FriendrequestSerializer(friendrequests, many=True)
+
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def searchFriends(request):
+    # Alright, so we need to login the user or is it automatically logged in if the authentication works right?
+    # Is it now using this TokenAuthMiddleWarestack or not?
+    # supposed it already works, 
+    user = request.user
+    querystring = request.GET.get('username')
+    friends = User.objects.filter(username__icontains=querystring).exclude(username__in=user.friends.all().values('username'))
+
+    serializer = FriendsSerializer(friends, many=True)
+
+    return Response(serializer.data)
+
 
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
@@ -98,7 +125,7 @@ def createGroup(request):
     user = request.user
     #print(request.body)
     body = request.POST #json.loads(request.body)     # The request at this URL should send the usernames of the chat parnter and a name for the group
-    print(body)
+
     user_strings = body.get('users').split(', ')
     users = [user]
     for username in user_strings:
@@ -114,3 +141,58 @@ def createGroup(request):
     group.subscribers.set(users)
 
     return Response(ChatGroupSerializer(group).data)
+
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def sendFriendrequest(request):
+    sender = request.user
+    body = request.POST
+
+    receiver_name = body.get('username')
+    receiver = get_object_or_404(MyUser, username=receiver_name)
+
+    # existing_friendrequest = FriendRequest.objects.filter(sender=sender, receiver=receiver).exists()
+    if FriendRequest.objects.filter(sender=sender, receiver=receiver).exists():
+        return Response({"status": "friend request already pending"})
+    else:
+        # Create the request
+        friendrequest = FriendRequest(sender=sender, receiver=receiver)
+        friendrequest.save()    
+
+        # We should return something like a statuscode?
+        return Response({"status": "friend request sent"})
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def acceptFriendrequest(request):
+    receiver = request.user
+    sender_name = request.GET.get('username')   # decided for querystring
+
+    sender = get_object_or_404(MyUser, username=sender_name)
+
+    # Retrieve the request
+    friendrequest = get_object_or_404(FriendRequest, sender=sender, receiver=receiver)
+    friendrequest.accept(receiver)          # Not sure if the check i implemented in accept is even needed    
+
+    # We should return something like a statuscode?
+    return Response({"status": "friend request accepted"})
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def declineFriendrequest(request):
+    receiver = request.user
+    sender_name = request.GET.get('username')   # decided for querystring
+
+    sender = get_object_or_404(MyUser, username=sender_name)
+
+    # Retrieve the request
+    friendrequest = get_object_or_404(FriendRequest, sender=sender, receiver=receiver)
+    friendrequest.decline(receiver)          # Not sure if the check i implemented in accept is even needed    
+
+    # We should return something like a statuscode?
+    return Response({"status": "friend request denied"})
