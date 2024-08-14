@@ -40,6 +40,7 @@ dependencies:
   tuple: ^2.0.2
   http: ^1.2.1
   top_snackbar_flutter: ^3.1.0
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:
@@ -57,15 +58,16 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
+  assets:
+    - assets/images/
+    - assets/
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  assets:
-    - assets/images/
+
 #      - images/App-Icon-transparent.png
 #      - assets/images/
 #      - images/

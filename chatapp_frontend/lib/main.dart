@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 import 'package:chatapp_frontend/pages/loginpage.dart';
+import 'package:chatapp_frontend/pages/profile.dart';
+import 'package:chatapp_frontend/src/themes/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -13,7 +15,7 @@ import 'pages/friends.dart';
 
 String token = "";      // TODO this is placeholder for now for a token that is somewhere stored persistently
 String username = "";
-String baseURL = "http://192.168.178.96:8000";
+// String baseURL = "http://192.168.178.96:8000";
 
 void main() {
   runApp(const MyApp());
@@ -36,25 +38,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: MyAppTheme.lightTheme,
+      themeMode: ThemeMode.system,
       home: const MyHomePage(title: 'Best App Ever'),
     );
   }
@@ -87,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
     const MyHomePage(title: "Best App ever, rerouted"),
     const ChatsPage(),
     const FriendsPage(),
-    LoginPage(logout: token.isNotEmpty),    // TODO somehow this doesnt work when I log out and log back in again
+    token.isEmpty ? LoginPage() : const ProfileScreen(),    // TODO somehow this doesnt work when I log out and log back in again
   ];
   // TODO At the moment this does not even need to be a stateful widget
   @override
@@ -134,8 +119,8 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'Friends',
           ),
           NavigationDestination(
-            icon: token.isEmpty ? const Icon(Icons.lock) : const Icon(Icons.logout),
-            label: token.isEmpty ? 'Login' : "Logout",
+            icon: token.isEmpty ? const Icon(Icons.lock) : const Icon(Icons.person),
+            label: token.isEmpty ? 'Login' : "Profile",
           ),
         ],
       ),
