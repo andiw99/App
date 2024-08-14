@@ -13,6 +13,7 @@ import 'pages/friends.dart';
 
 String token = "";      // TODO this is placeholder for now for a token that is somewhere stored persistently
 String username = "";
+String baseURL = "http://192.168.178.96:8000";
 
 void main() {
   runApp(const MyApp());
@@ -107,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title + " (I mean it)"),
-      ),
+      ),      
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
           setState(() {
@@ -139,6 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: Center(
+         child: Image.asset('assets/images/App-Icon-transparent.png'),
       ),// This trailing comma makes auto-formatting nicer for build methods.
     );
   }

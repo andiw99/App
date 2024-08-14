@@ -16,4 +16,5 @@ urlpatterns = [
     path('accept-friendrequest/', views.acceptFriendrequest),
     path('decline-friendrequest/', views.declineFriendrequest),
     path('get-friendrequests/', views.getFriendRequests),
+    path('signup/', views.signUpView),
 ]

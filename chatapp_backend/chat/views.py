@@ -11,6 +11,7 @@ from .serializers import *
 import json
 from .models import MyUser as User
 from .models import ChatGroup
+from .forms import UserCreateForm
 
 @api_view(['GET'])
 def getEndpoint(request):
@@ -53,9 +54,7 @@ def getChatMessages(request):
 
 
 @api_view(['GET', 'POST'])
-def getAuthentication(request):
-    print(request.user)
-    
+def getAuthentication(request):    
     serializer = AuthorSerializer(request.user)
 
     return Response(serializer.data)
@@ -196,3 +195,18 @@ def declineFriendrequest(request):
 
     # We should return something like a statuscode?
     return Response({"status": "friend request denied"})
+
+
+# TODO we will do this with flutter if this someday goes to production
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
+@api_view(['POST'])
+def signUpView(request):  
+    print(request.POST)  
+    form = UserCreateForm(request.POST)
+    print(form)
+    print(form.is_valid())
+    if form.is_valid():            # then we save the user? 
+        new_user = form.save()
+        return JsonResponse({'statuscode': 200, 'statusmessage': 'successfully registered. Please log in'})                    
+    return JsonResponse({'statuscode': 400, 'statusmessage': 'error', 'errors': form.errors}, status=400)

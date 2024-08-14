@@ -225,10 +225,16 @@ class _FriendsPageState extends State<FriendsPage> {
               },
             ),
           ),
-          Expanded(
-            child: _isSearching && _filteredFriendsList.isEmpty
-                ? Center(child: Text('No friends found.'))
-                : ListView.builder(
+          _filteredFriendsList.isEmpty ? const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: 50,),
+              Center(child: Text('No friends found.')),
+              SizedBox(height: 30,),
+            ],
+          )
+           : Expanded(
+            child: ListView.builder(
                     itemCount: _filteredFriendsList.length,
                     itemBuilder: (context, index) {
                       return 
@@ -276,10 +282,12 @@ class _FriendsPageState extends State<FriendsPage> {
                     },
                   ),
           ),
-                    _newFriendsList.isEmpty
-              ? Container()
+            _newFriendsList.isEmpty
+              ? const SizedBox.shrink()
               : const HorizontalLineWithLabel(label: "All Users"),
-          Expanded(
+            _newFriendsList.isEmpty
+              ? const SizedBox.shrink()
+            : Expanded(
             child: ListView.builder(
               itemCount: _newFriendsList.length,
               itemBuilder: (context, index) {
@@ -317,10 +325,12 @@ class _FriendsPageState extends State<FriendsPage> {
               },
             ),
           ),
-          _friendRequests.isEmpty
-              ? Container()
-              : const HorizontalLineWithLabel(label: "friend requests"),
-          Expanded(
+          _friendRequests.isEmpty || _newFriendsList.isNotEmpty
+              ? const SizedBox.shrink()
+              : const HorizontalLineWithLabel(label: "Friend requests"),
+          _friendRequests.isEmpty || _newFriendsList.isNotEmpty
+              ? const SizedBox.shrink()
+            : Expanded(
             child: ListView.builder(
               itemCount: _friendRequests.length,
               itemBuilder: (context, index) {
@@ -394,8 +404,7 @@ class _FriendsPageState extends State<FriendsPage> {
               },
             ),
           ),
-
-        ],
+                ],
       ),
     );
   }
