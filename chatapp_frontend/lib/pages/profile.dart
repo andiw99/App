@@ -1,6 +1,10 @@
 import 'package:chatapp_frontend/components/profilemenuwidget.dart';
 import 'package:chatapp_frontend/main.dart';
 import 'package:chatapp_frontend/pages/loginpage.dart';
+import 'package:chatapp_frontend/pages/registerpage.dart';
+import 'package:chatapp_frontend/pages/updatebiography.dart';
+import 'package:chatapp_frontend/pages/updategallery.dart';
+import 'package:chatapp_frontend/pages/updateprofile.dart';
 import 'package:chatapp_frontend/src/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -31,20 +35,20 @@ class ProfileScreen extends StatelessWidget {
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(100), child:  Image.asset('assets/images/profile.png')),
                   ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      width: 35,
-                      height: 35,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: primaryColor),
-                      child: const Icon(
-                        Icons.edit,
-                        color: Colors.black,
-                        size: 20,
-                      ),
-                    ),
-                  ),
+                  // Positioned(
+                  //   bottom: 0,
+                  //   right: 0,
+                  //   child: Container(
+                  //     width: 35,
+                  //     height: 35,
+                  //     decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: primaryColor),
+                  //     child: const Icon(
+                  //       Icons.edit,
+                  //       color: Colors.black,
+                  //       size: 20,
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
               const SizedBox(height: 10),
@@ -57,7 +61,10 @@ class ProfileScreen extends StatelessWidget {
                 width: 200,
                 child: ElevatedButton(
                   onPressed: () {
-                    // TODO Navigate to editPage
+                   Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const UpdateProfileInfo()),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: primaryColor, side: BorderSide.none, shape: const StadiumBorder()),
@@ -69,11 +76,27 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 10),
 
               /// -- MENU
-              ProfileMenuWidget(title: "Settings", icon: Icons.settings, onPress: () {}),
-              ProfileMenuWidget(title: "Billing Details", icon: Icons.wallet, onPress: () {}),
-              ProfileMenuWidget(title: "User Management", icon: Icons.person, onPress: () {}),
+              ProfileMenuWidget(title: "Profile Info", icon: Icons.person, onPress: () {
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const UpdateProfileInfo()),
+                    );
+              }),
+              ProfileMenuWidget(title: "Biography", icon: Icons.list, onPress: () {
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const UpdateBiography()),
+                    );
+              }),
+              ProfileMenuWidget(title: "Gallery", icon: Icons.photo_library_outlined, onPress: () {
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const UpdateGallery()),
+                    );
+              }),
               const Divider(),
               const SizedBox(height: 10),
+              ProfileMenuWidget(title: "Settings", icon: Icons.settings, onPress: () {}),
               ProfileMenuWidget(title: "Information", icon: Icons.info, onPress: () {}),
               ProfileMenuWidget(
                   title: "Logout",

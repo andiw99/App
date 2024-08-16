@@ -210,3 +210,13 @@ def signUpView(request):
         new_user = form.save()
         return JsonResponse({'statuscode': 200, 'statusmessage': 'successfully registered. Please log in'})                    
     return JsonResponse({'statuscode': 400, 'statusmessage': 'error', 'errors': form.errors}, status=400)
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def getUserInfo(request):
+    user = request.user
+    # We just serialize this user and send it back
+
+    return Response({"status": "friend request denied"})

@@ -1,19 +1,19 @@
+import 'package:chatapp_frontend/src/constants.dart';
 import 'package:flutter/material.dart';
-/*
-class UpdateProfileScreen extends StatelessWidget {
-  const UpdateProfileScreen({Key? key}) : super(key: key);
+
+class UpdateProfileInfo extends StatelessWidget {
+  const UpdateProfileInfo({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(ProfileController());
+    // final controller = Get.put(ProfileController());
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(onPressed: () => Get.back(), icon: const Icon(LineAwesomeIcons.angle_left)),
-        title: Text(tEditProfile, style: Theme.of(context).textTheme.headline4),
+        title: Text(editProfile, style: Theme.of(context).textTheme.headlineMedium),
       ),
       body: SingleChildScrollView(
         child: Container(
-          padding: const EdgeInsets.all(tDefaultSize),
+          padding: const EdgeInsets.all(defaultPadding),
           child: Column(
             children: [
               // -- IMAGE with ICON
@@ -24,7 +24,7 @@ class UpdateProfileScreen extends StatelessWidget {
                     height: 120,
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(100),
-                        child: const Image(image: AssetImage(tProfileImage))),
+                        child: const Image(image: AssetImage(profilePicturePath))),
                   ),
                   Positioned(
                     bottom: 0,
@@ -33,8 +33,8 @@ class UpdateProfileScreen extends StatelessWidget {
                       width: 35,
                       height: 35,
                       decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(100), color: tPrimaryColor),
-                      child: const Icon(LineAwesomeIcons.camera, color: Colors.black, size: 20),
+                      BoxDecoration(borderRadius: BorderRadius.circular(100), color: primaryColor),
+                      child: const Icon(Icons.photo_camera_outlined, color: Colors.black, size: 20),
                     ),
                   ),
                 ],
@@ -42,77 +42,92 @@ class UpdateProfileScreen extends StatelessWidget {
               const SizedBox(height: 50),
 
               // -- Form Fields
-              Form(
-                child: Column(
-                  children: [
-                    TextFormField(
-                      decoration: const InputDecoration(
-                          label: Text(tFullName), prefixIcon: Icon(LineAwesomeIcons.user)),
-                    ),
-                    const SizedBox(height: tFormHeight - 20),
-                    TextFormField(
-                      decoration: const InputDecoration(
-                          label: Text(tEmail), prefixIcon: Icon(LineAwesomeIcons.envelope_1)),
-                    ),
-                    const SizedBox(height: tFormHeight - 20),
-                    TextFormField(
-                      decoration: const InputDecoration(
-                          label: Text(tPhoneNo), prefixIcon: Icon(LineAwesomeIcons.phone)),
-                    ),
-                    const SizedBox(height: tFormHeight - 20),
-                    TextFormField(
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        label: const Text(tPassword),
-                        prefixIcon: const Icon(Icons.fingerprint),
-                        suffixIcon:
-                        IconButton(icon: const Icon(LineAwesomeIcons.eye_slash), onPressed: () {}),
-                      ),
-                    ),
-                    const SizedBox(height: tFormHeight),
-
-                    // -- Form Submit Button
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () => Get.to(() => const UpdateProfileScreen()),
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: tPrimaryColor,
-                            side: BorderSide.none,
-                            shape: const StadiumBorder()),
-                        child: const Text(tEditProfile, style: TextStyle(color: tDarkColor)),
-                      ),
-                    ),
-                    const SizedBox(height: tFormHeight),
-
-                    // -- Created Date and Delete Button
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Center(                
+                child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: formWidth),
+                    child: Form(                
+                    child: Column(
                       children: [
-                        const Text.rich(
-                          TextSpan(
-                            text: tJoined,
-                            style: TextStyle(fontSize: 12),
-                            children: [
-                              TextSpan(
-                                  text: tJoinedAt,
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))
-                            ],
+                        TextFormField(
+                          initialValue: firstName, // TODO replace initial values with actual values from DB (and or server?)
+                          decoration: const InputDecoration(
+                              label: Text(firstNameString), prefixIcon: Icon(Icons.person)),
+                        ),
+                        const SizedBox(height: formHeight),
+                        TextFormField(
+                          initialValue: lastName,
+                          decoration: const InputDecoration(
+                              label: Text(lastNameString), prefixIcon: Icon(Icons.person)),
+                        ),
+                        const SizedBox(height: formHeight),
+                        TextFormField(
+                          initialValue: email,
+                          decoration: const InputDecoration(
+                              label: Text(emailString), prefixIcon: Icon(Icons.email)),
+                        ),
+                        const SizedBox(height: formHeight),
+                        TextFormField(
+                          initialValue: phoneNumber,
+                          decoration: const InputDecoration(
+                              label: Text(phoneNumberString), prefixIcon: Icon(Icons.phone)),
+                        ),
+                        const SizedBox(height: formHeight),
+                        // TextFormField(
+                        //   obscureText: true,
+                        //   decoration: InputDecoration(
+                        //     label: const Text(tPassword),
+                        //     prefixIcon: const Icon(Icons.fingerprint),
+                        //     suffixIcon:
+                        //     IconButton(icon: const Icon(LineAwesomeIcons.eye_slash), onPressed: () {}),
+                        //   ),
+                        // ),
+                        const SizedBox(height: formHeight),
+                  
+                        // -- Form Submit Button
+                        SizedBox(
+                          height: 50,
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: primaryColor,
+                                side: BorderSide.none,
+                                shape: const StadiumBorder()),
+                            child: const Text(submitChanges, style: TextStyle(color: darkColor)),
                           ),
                         ),
-                        ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.redAccent.withOpacity(0.1),
-                              elevation: 0,
-                              foregroundColor: Colors.red,
-                              shape: const StadiumBorder(),
-                              side: BorderSide.none),
-                          child: const Text(tDelete),
-                        ),
+                        const SizedBox(height: formHeight),
+                  
+                        // -- Created Date and Delete Button
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text.rich(
+                              TextSpan(
+                                text: registeredOn,
+                                style: TextStyle(fontSize: 12),
+                                children: [
+                                  TextSpan(
+                                      text: registeredOnDate,
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))
+                                ],
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.redAccent.withOpacity(0.1),
+                                  elevation: 0,
+                                  foregroundColor: Colors.red,
+                                  shape: const StadiumBorder(),
+                                  side: BorderSide.none),
+                              child: const Text(deleteAcc),
+                            ),
+                          ],
+                        )
                       ],
-                    )
-                  ],
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -121,4 +136,4 @@ class UpdateProfileScreen extends StatelessWidget {
       ),
     );
   }
-} */
+}
