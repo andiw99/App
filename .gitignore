@@ -8,4 +8,4 @@ chatapp_backend/.env
 /chatapp_backend/.env
 chatapp_backend/chatapp_backend/.env
 /chatapp_backend/chatapp_backend/.env
-
+./venv
