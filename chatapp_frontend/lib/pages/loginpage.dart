@@ -3,6 +3,8 @@ import 'package:chatapp_frontend/components/cleantextformfield.dart';
 import 'package:chatapp_frontend/components/horizontallign.dart';
 import 'package:chatapp_frontend/main.dart';
 import 'package:chatapp_frontend/pages/registerpage.dart';
+import 'package:chatapp_frontend/src/repository.dart';
+import 'package:chatapp_frontend/src/restapi.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -23,7 +25,10 @@ class _LoginPageState extends State<LoginPage> {
 
   final passwordController = TextEditingController();
 
-  final client = http.Client();
+  Api restClient = DjangoRestApi(); // Or we could even hand the client as parameter, but that should be fine for now
+  RepositoryClient repoClient = DriftRepositoryClient();      // I actually don't want to initialize it here, but rather when it is needed. But then I have the DriftRepository Client
+  // In the middle of my Code, which is not very beautiful. Should we have a static class like a 'ClientGetter' which gets the clients so we would only have to change the clientgetter if
+  // we were to change up some architectural stuff?
 
   @override
   void initState() {
@@ -58,29 +63,26 @@ class _LoginPageState extends State<LoginPage> {
           );
         },
       );
-      var jsonMessage = jsonEncode({
-        'username': usernameController.text,
-        'password': passwordController.text
-      });
+
       // well we now have to send an http get? request to receive the token
-      var retrieveURL = Uri.parse('http://192.168.178.96:8000/api-token-auth/');
-      var tokenMap = jsonDecode((await client.post(retrieveURL,
-                  headers: <String, String>{
-                    'Content-Type': 'application/json; charset=UTF-8',
-                  },
-                  body: jsonMessage))
-              .body)
-          as Map<String,
-              dynamic>; // TODO in a get request you can send headers, you probably need to handle the authorization with this
-      await Future.delayed(Duration(
+      var tokenMap = await restClient.apiTokenAuth(usernameController.text, passwordController.text);  
+      await Future.delayed(const Duration(
           milliseconds:
               700)); // TODO remove just makes the feeling a little bit more real
       if (tokenMap.containsKey("token")) {
         // Redirect to Home with message logged in as...
         // I am not to sound with the routing at the moment
+        
+        var userInfoMap = await restClient.getProfileInfo(tokenMap["token"]);
+        // We also add the token
+        userInfoMap['token'] = tokenMap["token"];
+        // Here we now want to persist the userdata
+        print("\n\n\nBefore add Profile call");
+        repoClient.addProfile(userInfoMap);
+        print("After add Profile call\n\n\n");
         setState(() {
-          token = tokenMap["token"];
-          print("Setting token!");
+
+          token = tokenMap["token"];          // We will keep this for now because of the many places where I used the global token, but actually we should get it from the repo now.
           username = usernameController.text;
           showTopSnackBar(
             Overlay.of(context),

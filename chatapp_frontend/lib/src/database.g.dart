@@ -3,6 +3,188 @@
 part of 'database.dart';
 
 // ignore_for_file: type=lint
+class $PersonTable extends Person with TableInfo<$PersonTable, PersonData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PersonTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _usernameMeta =
+      const VerificationMeta('username');
+  @override
+  late final GeneratedColumn<String> username = GeneratedColumn<String>(
+      'username', aliasedName, false,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 2, maxTextLength: 128),
+      type: DriftSqlType.string,
+      requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, username];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'person';
+  @override
+  VerificationContext validateIntegrity(Insertable<PersonData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('username')) {
+      context.handle(_usernameMeta,
+          username.isAcceptableOrUnknown(data['username']!, _usernameMeta));
+    } else if (isInserting) {
+      context.missing(_usernameMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PersonData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PersonData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      username: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}username'])!,
+    );
+  }
+
+  @override
+  $PersonTable createAlias(String alias) {
+    return $PersonTable(attachedDatabase, alias);
+  }
+}
+
+class PersonData extends DataClass implements Insertable<PersonData> {
+  final int id;
+  final String username;
+  const PersonData({required this.id, required this.username});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['username'] = Variable<String>(username);
+    return map;
+  }
+
+  PersonCompanion toCompanion(bool nullToAbsent) {
+    return PersonCompanion(
+      id: Value(id),
+      username: Value(username),
+    );
+  }
+
+  factory PersonData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PersonData(
+      id: serializer.fromJson<int>(json['id']),
+      username: serializer.fromJson<String>(json['username']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'username': serializer.toJson<String>(username),
+    };
+  }
+
+  PersonData copyWith({int? id, String? username}) => PersonData(
+        id: id ?? this.id,
+        username: username ?? this.username,
+      );
+  PersonData copyWithCompanion(PersonCompanion data) {
+    return PersonData(
+      id: data.id.present ? data.id.value : this.id,
+      username: data.username.present ? data.username.value : this.username,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PersonData(')
+          ..write('id: $id, ')
+          ..write('username: $username')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, username);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PersonData &&
+          other.id == this.id &&
+          other.username == this.username);
+}
+
+class PersonCompanion extends UpdateCompanion<PersonData> {
+  final Value<int> id;
+  final Value<String> username;
+  const PersonCompanion({
+    this.id = const Value.absent(),
+    this.username = const Value.absent(),
+  });
+  PersonCompanion.insert({
+    this.id = const Value.absent(),
+    required String username,
+  }) : username = Value(username);
+  static Insertable<PersonData> custom({
+    Expression<int>? id,
+    Expression<String>? username,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (username != null) 'username': username,
+    });
+  }
+
+  PersonCompanion copyWith({Value<int>? id, Value<String>? username}) {
+    return PersonCompanion(
+      id: id ?? this.id,
+      username: username ?? this.username,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (username.present) {
+      map['username'] = Variable<String>(username.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PersonCompanion(')
+          ..write('id: $id, ')
+          ..write('username: $username')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $ProfileTable extends Profile with TableInfo<$ProfileTable, ProfileData> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -30,27 +212,28 @@ class $ProfileTable extends Profile with TableInfo<$ProfileTable, ProfileData> {
       const VerificationMeta('firstName');
   @override
   late final GeneratedColumn<String> firstName = GeneratedColumn<String>(
-      'first_name', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 2, maxTextLength: 128),
+      'first_name', aliasedName, true,
+      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 128),
       type: DriftSqlType.string,
-      requiredDuringInsert: true);
+      requiredDuringInsert: false,
+      defaultValue: const Constant(""));
   static const VerificationMeta _lastNameMeta =
       const VerificationMeta('lastName');
   @override
   late final GeneratedColumn<String> lastName = GeneratedColumn<String>(
-      'last_name', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 2, maxTextLength: 128),
+      'last_name', aliasedName, true,
+      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 128),
       type: DriftSqlType.string,
-      requiredDuringInsert: true);
+      requiredDuringInsert: false,
+      defaultValue: const Constant(""));
   static const VerificationMeta _bioMeta = const VerificationMeta('bio');
   @override
   late final GeneratedColumn<String> bio = GeneratedColumn<String>(
-      'bio', aliasedName, false,
+      'bio', aliasedName, true,
       additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 1028),
       type: DriftSqlType.string,
-      requiredDuringInsert: true);
+      requiredDuringInsert: false,
+      defaultValue: const Constant(""));
   static const VerificationMeta _emailMeta = const VerificationMeta('email');
   @override
   late final GeneratedColumn<String> email = GeneratedColumn<String>(
@@ -61,9 +244,11 @@ class $ProfileTable extends Profile with TableInfo<$ProfileTable, ProfileData> {
   static const VerificationMeta _phoneNumberMeta =
       const VerificationMeta('phoneNumber');
   @override
-  late final GeneratedColumn<int> phoneNumber = GeneratedColumn<int>(
-      'phone_number', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<String> phoneNumber = GeneratedColumn<String>(
+      'phone_number', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(""));
   static const VerificationMeta _tokenMeta = const VerificationMeta('token');
   @override
   late final GeneratedColumn<String> token = GeneratedColumn<String>(
@@ -97,20 +282,14 @@ class $ProfileTable extends Profile with TableInfo<$ProfileTable, ProfileData> {
     if (data.containsKey('first_name')) {
       context.handle(_firstNameMeta,
           firstName.isAcceptableOrUnknown(data['first_name']!, _firstNameMeta));
-    } else if (isInserting) {
-      context.missing(_firstNameMeta);
     }
     if (data.containsKey('last_name')) {
       context.handle(_lastNameMeta,
           lastName.isAcceptableOrUnknown(data['last_name']!, _lastNameMeta));
-    } else if (isInserting) {
-      context.missing(_lastNameMeta);
     }
     if (data.containsKey('bio')) {
       context.handle(
           _bioMeta, bio.isAcceptableOrUnknown(data['bio']!, _bioMeta));
-    } else if (isInserting) {
-      context.missing(_bioMeta);
     }
     if (data.containsKey('email')) {
       context.handle(
@@ -123,8 +302,6 @@ class $ProfileTable extends Profile with TableInfo<$ProfileTable, ProfileData> {
           _phoneNumberMeta,
           phoneNumber.isAcceptableOrUnknown(
               data['phone_number']!, _phoneNumberMeta));
-    } else if (isInserting) {
-      context.missing(_phoneNumberMeta);
     }
     if (data.containsKey('token')) {
       context.handle(
@@ -146,15 +323,15 @@ class $ProfileTable extends Profile with TableInfo<$ProfileTable, ProfileData> {
       username: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}username'])!,
       firstName: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}first_name'])!,
+          .read(DriftSqlType.string, data['${effectivePrefix}first_name']),
       lastName: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}last_name'])!,
+          .read(DriftSqlType.string, data['${effectivePrefix}last_name']),
       bio: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}bio'])!,
+          .read(DriftSqlType.string, data['${effectivePrefix}bio']),
       email: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}email'])!,
       phoneNumber: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}phone_number'])!,
+          .read(DriftSqlType.string, data['${effectivePrefix}phone_number']),
       token: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}token'])!,
     );
@@ -169,31 +346,39 @@ class $ProfileTable extends Profile with TableInfo<$ProfileTable, ProfileData> {
 class ProfileData extends DataClass implements Insertable<ProfileData> {
   final int id;
   final String username;
-  final String firstName;
-  final String lastName;
-  final String bio;
+  final String? firstName;
+  final String? lastName;
+  final String? bio;
   final String email;
-  final int phoneNumber;
+  final String? phoneNumber;
   final String token;
   const ProfileData(
       {required this.id,
       required this.username,
-      required this.firstName,
-      required this.lastName,
-      required this.bio,
+      this.firstName,
+      this.lastName,
+      this.bio,
       required this.email,
-      required this.phoneNumber,
+      this.phoneNumber,
       required this.token});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['username'] = Variable<String>(username);
-    map['first_name'] = Variable<String>(firstName);
-    map['last_name'] = Variable<String>(lastName);
-    map['bio'] = Variable<String>(bio);
+    if (!nullToAbsent || firstName != null) {
+      map['first_name'] = Variable<String>(firstName);
+    }
+    if (!nullToAbsent || lastName != null) {
+      map['last_name'] = Variable<String>(lastName);
+    }
+    if (!nullToAbsent || bio != null) {
+      map['bio'] = Variable<String>(bio);
+    }
     map['email'] = Variable<String>(email);
-    map['phone_number'] = Variable<int>(phoneNumber);
+    if (!nullToAbsent || phoneNumber != null) {
+      map['phone_number'] = Variable<String>(phoneNumber);
+    }
     map['token'] = Variable<String>(token);
     return map;
   }
@@ -202,11 +387,17 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
     return ProfileCompanion(
       id: Value(id),
       username: Value(username),
-      firstName: Value(firstName),
-      lastName: Value(lastName),
-      bio: Value(bio),
+      firstName: firstName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(firstName),
+      lastName: lastName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastName),
+      bio: bio == null && nullToAbsent ? const Value.absent() : Value(bio),
       email: Value(email),
-      phoneNumber: Value(phoneNumber),
+      phoneNumber: phoneNumber == null && nullToAbsent
+          ? const Value.absent()
+          : Value(phoneNumber),
       token: Value(token),
     );
   }
@@ -217,11 +408,11 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
     return ProfileData(
       id: serializer.fromJson<int>(json['id']),
       username: serializer.fromJson<String>(json['username']),
-      firstName: serializer.fromJson<String>(json['firstName']),
-      lastName: serializer.fromJson<String>(json['lastName']),
-      bio: serializer.fromJson<String>(json['bio']),
+      firstName: serializer.fromJson<String?>(json['firstName']),
+      lastName: serializer.fromJson<String?>(json['lastName']),
+      bio: serializer.fromJson<String?>(json['bio']),
       email: serializer.fromJson<String>(json['email']),
-      phoneNumber: serializer.fromJson<int>(json['phoneNumber']),
+      phoneNumber: serializer.fromJson<String?>(json['phoneNumber']),
       token: serializer.fromJson<String>(json['token']),
     );
   }
@@ -231,11 +422,11 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'username': serializer.toJson<String>(username),
-      'firstName': serializer.toJson<String>(firstName),
-      'lastName': serializer.toJson<String>(lastName),
-      'bio': serializer.toJson<String>(bio),
+      'firstName': serializer.toJson<String?>(firstName),
+      'lastName': serializer.toJson<String?>(lastName),
+      'bio': serializer.toJson<String?>(bio),
       'email': serializer.toJson<String>(email),
-      'phoneNumber': serializer.toJson<int>(phoneNumber),
+      'phoneNumber': serializer.toJson<String?>(phoneNumber),
       'token': serializer.toJson<String>(token),
     };
   }
@@ -243,20 +434,20 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
   ProfileData copyWith(
           {int? id,
           String? username,
-          String? firstName,
-          String? lastName,
-          String? bio,
+          Value<String?> firstName = const Value.absent(),
+          Value<String?> lastName = const Value.absent(),
+          Value<String?> bio = const Value.absent(),
           String? email,
-          int? phoneNumber,
+          Value<String?> phoneNumber = const Value.absent(),
           String? token}) =>
       ProfileData(
         id: id ?? this.id,
         username: username ?? this.username,
-        firstName: firstName ?? this.firstName,
-        lastName: lastName ?? this.lastName,
-        bio: bio ?? this.bio,
+        firstName: firstName.present ? firstName.value : this.firstName,
+        lastName: lastName.present ? lastName.value : this.lastName,
+        bio: bio.present ? bio.value : this.bio,
         email: email ?? this.email,
-        phoneNumber: phoneNumber ?? this.phoneNumber,
+        phoneNumber: phoneNumber.present ? phoneNumber.value : this.phoneNumber,
         token: token ?? this.token,
       );
   ProfileData copyWithCompanion(ProfileCompanion data) {
@@ -308,11 +499,11 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
 class ProfileCompanion extends UpdateCompanion<ProfileData> {
   final Value<int> id;
   final Value<String> username;
-  final Value<String> firstName;
-  final Value<String> lastName;
-  final Value<String> bio;
+  final Value<String?> firstName;
+  final Value<String?> lastName;
+  final Value<String?> bio;
   final Value<String> email;
-  final Value<int> phoneNumber;
+  final Value<String?> phoneNumber;
   final Value<String> token;
   const ProfileCompanion({
     this.id = const Value.absent(),
@@ -327,18 +518,14 @@ class ProfileCompanion extends UpdateCompanion<ProfileData> {
   ProfileCompanion.insert({
     this.id = const Value.absent(),
     required String username,
-    required String firstName,
-    required String lastName,
-    required String bio,
+    this.firstName = const Value.absent(),
+    this.lastName = const Value.absent(),
+    this.bio = const Value.absent(),
     required String email,
-    required int phoneNumber,
+    this.phoneNumber = const Value.absent(),
     required String token,
   })  : username = Value(username),
-        firstName = Value(firstName),
-        lastName = Value(lastName),
-        bio = Value(bio),
         email = Value(email),
-        phoneNumber = Value(phoneNumber),
         token = Value(token);
   static Insertable<ProfileData> custom({
     Expression<int>? id,
@@ -347,7 +534,7 @@ class ProfileCompanion extends UpdateCompanion<ProfileData> {
     Expression<String>? lastName,
     Expression<String>? bio,
     Expression<String>? email,
-    Expression<int>? phoneNumber,
+    Expression<String>? phoneNumber,
     Expression<String>? token,
   }) {
     return RawValuesInsertable({
@@ -365,11 +552,11 @@ class ProfileCompanion extends UpdateCompanion<ProfileData> {
   ProfileCompanion copyWith(
       {Value<int>? id,
       Value<String>? username,
-      Value<String>? firstName,
-      Value<String>? lastName,
-      Value<String>? bio,
+      Value<String?>? firstName,
+      Value<String?>? lastName,
+      Value<String?>? bio,
       Value<String>? email,
-      Value<int>? phoneNumber,
+      Value<String?>? phoneNumber,
       Value<String>? token}) {
     return ProfileCompanion(
       id: id ?? this.id,
@@ -405,7 +592,7 @@ class ProfileCompanion extends UpdateCompanion<ProfileData> {
       map['email'] = Variable<String>(email.value);
     }
     if (phoneNumber.present) {
-      map['phone_number'] = Variable<int>(phoneNumber.value);
+      map['phone_number'] = Variable<String>(phoneNumber.value);
     }
     if (token.present) {
       map['token'] = Variable<String>(token.value);
@@ -465,26 +652,27 @@ class $FriendTable extends Friend with TableInfo<$FriendTable, FriendData> {
   @override
   late final GeneratedColumn<String> firstName = GeneratedColumn<String>(
       'first_name', aliasedName, true,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 2, maxTextLength: 128),
+      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 128),
       type: DriftSqlType.string,
-      requiredDuringInsert: false);
+      requiredDuringInsert: false,
+      defaultValue: const Constant(""));
   static const VerificationMeta _lastNameMeta =
       const VerificationMeta('lastName');
   @override
   late final GeneratedColumn<String> lastName = GeneratedColumn<String>(
       'last_name', aliasedName, true,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 2, maxTextLength: 128),
+      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 128),
       type: DriftSqlType.string,
-      requiredDuringInsert: false);
+      requiredDuringInsert: false,
+      defaultValue: const Constant(""));
   static const VerificationMeta _bioMeta = const VerificationMeta('bio');
   @override
   late final GeneratedColumn<String> bio = GeneratedColumn<String>(
       'bio', aliasedName, true,
-      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 1028),
+      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 1024),
       type: DriftSqlType.string,
-      requiredDuringInsert: false);
+      requiredDuringInsert: false,
+      defaultValue: const Constant(""));
   @override
   List<GeneratedColumn> get $columns =>
       [id, username, profileId, firstName, lastName, bio];
@@ -778,188 +966,6 @@ class FriendCompanion extends UpdateCompanion<FriendData> {
   }
 }
 
-class $PersonTable extends Person with TableInfo<$PersonTable, PersonData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $PersonTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _usernameMeta =
-      const VerificationMeta('username');
-  @override
-  late final GeneratedColumn<String> username = GeneratedColumn<String>(
-      'username', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 2, maxTextLength: 128),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns => [id, username];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'person';
-  @override
-  VerificationContext validateIntegrity(Insertable<PersonData> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('username')) {
-      context.handle(_usernameMeta,
-          username.isAcceptableOrUnknown(data['username']!, _usernameMeta));
-    } else if (isInserting) {
-      context.missing(_usernameMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  PersonData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return PersonData(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      username: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}username'])!,
-    );
-  }
-
-  @override
-  $PersonTable createAlias(String alias) {
-    return $PersonTable(attachedDatabase, alias);
-  }
-}
-
-class PersonData extends DataClass implements Insertable<PersonData> {
-  final int id;
-  final String username;
-  const PersonData({required this.id, required this.username});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['username'] = Variable<String>(username);
-    return map;
-  }
-
-  PersonCompanion toCompanion(bool nullToAbsent) {
-    return PersonCompanion(
-      id: Value(id),
-      username: Value(username),
-    );
-  }
-
-  factory PersonData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return PersonData(
-      id: serializer.fromJson<int>(json['id']),
-      username: serializer.fromJson<String>(json['username']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'username': serializer.toJson<String>(username),
-    };
-  }
-
-  PersonData copyWith({int? id, String? username}) => PersonData(
-        id: id ?? this.id,
-        username: username ?? this.username,
-      );
-  PersonData copyWithCompanion(PersonCompanion data) {
-    return PersonData(
-      id: data.id.present ? data.id.value : this.id,
-      username: data.username.present ? data.username.value : this.username,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('PersonData(')
-          ..write('id: $id, ')
-          ..write('username: $username')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, username);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is PersonData &&
-          other.id == this.id &&
-          other.username == this.username);
-}
-
-class PersonCompanion extends UpdateCompanion<PersonData> {
-  final Value<int> id;
-  final Value<String> username;
-  const PersonCompanion({
-    this.id = const Value.absent(),
-    this.username = const Value.absent(),
-  });
-  PersonCompanion.insert({
-    this.id = const Value.absent(),
-    required String username,
-  }) : username = Value(username);
-  static Insertable<PersonData> custom({
-    Expression<int>? id,
-    Expression<String>? username,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (username != null) 'username': username,
-    });
-  }
-
-  PersonCompanion copyWith({Value<int>? id, Value<String>? username}) {
-    return PersonCompanion(
-      id: id ?? this.id,
-      username: username ?? this.username,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (username.present) {
-      map['username'] = Variable<String>(username.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('PersonCompanion(')
-          ..write('id: $id, ')
-          ..write('username: $username')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $PhotoTable extends Photo with TableInfo<$PhotoTable, PhotoData> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -1180,36 +1186,180 @@ class PhotoCompanion extends UpdateCompanion<PhotoData> {
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
+  late final $PersonTable person = $PersonTable(this);
   late final $ProfileTable profile = $ProfileTable(this);
   late final $FriendTable friend = $FriendTable(this);
-  late final $PersonTable person = $PersonTable(this);
   late final $PhotoTable photo = $PhotoTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [profile, friend, person, photo];
+      [person, profile, friend, photo];
 }
 
+typedef $$PersonTableCreateCompanionBuilder = PersonCompanion Function({
+  Value<int> id,
+  required String username,
+});
+typedef $$PersonTableUpdateCompanionBuilder = PersonCompanion Function({
+  Value<int> id,
+  Value<String> username,
+});
+
+final class $$PersonTableReferences
+    extends BaseReferences<_$AppDatabase, $PersonTable, PersonData> {
+  $$PersonTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$PhotoTable, List<PhotoData>> _photoRefsTable(
+          _$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(db.photo,
+          aliasName: $_aliasNameGenerator(db.person.id, db.photo.profileId));
+
+  $$PhotoTableProcessedTableManager get photoRefs {
+    final manager = $$PhotoTableTableManager($_db, $_db.photo)
+        .filter((f) => f.profileId.id($_item.id));
+
+    final cache = $_typedResult.readTableOrNull(_photoRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$PersonTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $PersonTable> {
+  $$PersonTableFilterComposer(super.$state);
+  ColumnFilters<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get username => $state.composableBuilder(
+      column: $state.table.username,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ComposableFilter photoRefs(
+      ComposableFilter Function($$PhotoTableFilterComposer f) f) {
+    final $$PhotoTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $state.db.photo,
+        getReferencedColumn: (t) => t.profileId,
+        builder: (joinBuilder, parentComposers) => $$PhotoTableFilterComposer(
+            ComposerState(
+                $state.db, $state.db.photo, joinBuilder, parentComposers)));
+    return f(composer);
+  }
+}
+
+class $$PersonTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $PersonTable> {
+  $$PersonTableOrderingComposer(super.$state);
+  ColumnOrderings<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get username => $state.composableBuilder(
+      column: $state.table.username,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
+class $$PersonTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $PersonTable,
+    PersonData,
+    $$PersonTableFilterComposer,
+    $$PersonTableOrderingComposer,
+    $$PersonTableCreateCompanionBuilder,
+    $$PersonTableUpdateCompanionBuilder,
+    (PersonData, $$PersonTableReferences),
+    PersonData,
+    PrefetchHooks Function({bool photoRefs})> {
+  $$PersonTableTableManager(_$AppDatabase db, $PersonTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$PersonTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$PersonTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> username = const Value.absent(),
+          }) =>
+              PersonCompanion(
+            id: id,
+            username: username,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String username,
+          }) =>
+              PersonCompanion.insert(
+            id: id,
+            username: username,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) =>
+                  (e.readTable(table), $$PersonTableReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: ({photoRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (photoRefs) db.photo],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (photoRefs)
+                    await $_getPrefetchedData(
+                        currentTable: table,
+                        referencedTable:
+                            $$PersonTableReferences._photoRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$PersonTableReferences(db, table, p0).photoRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.profileId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$PersonTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $PersonTable,
+    PersonData,
+    $$PersonTableFilterComposer,
+    $$PersonTableOrderingComposer,
+    $$PersonTableCreateCompanionBuilder,
+    $$PersonTableUpdateCompanionBuilder,
+    (PersonData, $$PersonTableReferences),
+    PersonData,
+    PrefetchHooks Function({bool photoRefs})>;
 typedef $$ProfileTableCreateCompanionBuilder = ProfileCompanion Function({
   Value<int> id,
   required String username,
-  required String firstName,
-  required String lastName,
-  required String bio,
+  Value<String?> firstName,
+  Value<String?> lastName,
+  Value<String?> bio,
   required String email,
-  required int phoneNumber,
+  Value<String?> phoneNumber,
   required String token,
 });
 typedef $$ProfileTableUpdateCompanionBuilder = ProfileCompanion Function({
   Value<int> id,
   Value<String> username,
-  Value<String> firstName,
-  Value<String> lastName,
-  Value<String> bio,
+  Value<String?> firstName,
+  Value<String?> lastName,
+  Value<String?> bio,
   Value<String> email,
-  Value<int> phoneNumber,
+  Value<String?> phoneNumber,
   Value<String> token,
 });
 
@@ -1265,7 +1415,7 @@ class $$ProfileTableFilterComposer
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
-  ColumnFilters<int> get phoneNumber => $state.composableBuilder(
+  ColumnFilters<String> get phoneNumber => $state.composableBuilder(
       column: $state.table.phoneNumber,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
@@ -1322,7 +1472,7 @@ class $$ProfileTableOrderingComposer
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 
-  ColumnOrderings<int> get phoneNumber => $state.composableBuilder(
+  ColumnOrderings<String> get phoneNumber => $state.composableBuilder(
       column: $state.table.phoneNumber,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
@@ -1355,11 +1505,11 @@ class $$ProfileTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> username = const Value.absent(),
-            Value<String> firstName = const Value.absent(),
-            Value<String> lastName = const Value.absent(),
-            Value<String> bio = const Value.absent(),
+            Value<String?> firstName = const Value.absent(),
+            Value<String?> lastName = const Value.absent(),
+            Value<String?> bio = const Value.absent(),
             Value<String> email = const Value.absent(),
-            Value<int> phoneNumber = const Value.absent(),
+            Value<String?> phoneNumber = const Value.absent(),
             Value<String> token = const Value.absent(),
           }) =>
               ProfileCompanion(
@@ -1375,11 +1525,11 @@ class $$ProfileTableTableManager extends RootTableManager<
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String username,
-            required String firstName,
-            required String lastName,
-            required String bio,
+            Value<String?> firstName = const Value.absent(),
+            Value<String?> lastName = const Value.absent(),
+            Value<String?> bio = const Value.absent(),
             required String email,
-            required int phoneNumber,
+            Value<String?> phoneNumber = const Value.absent(),
             required String token,
           }) =>
               ProfileCompanion.insert(
@@ -1652,150 +1802,6 @@ typedef $$FriendTableProcessedTableManager = ProcessedTableManager<
     (FriendData, $$FriendTableReferences),
     FriendData,
     PrefetchHooks Function({bool profileId})>;
-typedef $$PersonTableCreateCompanionBuilder = PersonCompanion Function({
-  Value<int> id,
-  required String username,
-});
-typedef $$PersonTableUpdateCompanionBuilder = PersonCompanion Function({
-  Value<int> id,
-  Value<String> username,
-});
-
-final class $$PersonTableReferences
-    extends BaseReferences<_$AppDatabase, $PersonTable, PersonData> {
-  $$PersonTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static MultiTypedResultKey<$PhotoTable, List<PhotoData>> _photoRefsTable(
-          _$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(db.photo,
-          aliasName: $_aliasNameGenerator(db.person.id, db.photo.profileId));
-
-  $$PhotoTableProcessedTableManager get photoRefs {
-    final manager = $$PhotoTableTableManager($_db, $_db.photo)
-        .filter((f) => f.profileId.id($_item.id));
-
-    final cache = $_typedResult.readTableOrNull(_photoRefsTable($_db));
-    return ProcessedTableManager(
-        manager.$state.copyWith(prefetchedData: cache));
-  }
-}
-
-class $$PersonTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $PersonTable> {
-  $$PersonTableFilterComposer(super.$state);
-  ColumnFilters<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get username => $state.composableBuilder(
-      column: $state.table.username,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ComposableFilter photoRefs(
-      ComposableFilter Function($$PhotoTableFilterComposer f) f) {
-    final $$PhotoTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $state.db.photo,
-        getReferencedColumn: (t) => t.profileId,
-        builder: (joinBuilder, parentComposers) => $$PhotoTableFilterComposer(
-            ComposerState(
-                $state.db, $state.db.photo, joinBuilder, parentComposers)));
-    return f(composer);
-  }
-}
-
-class $$PersonTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $PersonTable> {
-  $$PersonTableOrderingComposer(super.$state);
-  ColumnOrderings<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get username => $state.composableBuilder(
-      column: $state.table.username,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-class $$PersonTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $PersonTable,
-    PersonData,
-    $$PersonTableFilterComposer,
-    $$PersonTableOrderingComposer,
-    $$PersonTableCreateCompanionBuilder,
-    $$PersonTableUpdateCompanionBuilder,
-    (PersonData, $$PersonTableReferences),
-    PersonData,
-    PrefetchHooks Function({bool photoRefs})> {
-  $$PersonTableTableManager(_$AppDatabase db, $PersonTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer:
-              $$PersonTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$PersonTableOrderingComposer(ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<String> username = const Value.absent(),
-          }) =>
-              PersonCompanion(
-            id: id,
-            username: username,
-          ),
-          createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            required String username,
-          }) =>
-              PersonCompanion.insert(
-            id: id,
-            username: username,
-          ),
-          withReferenceMapper: (p0) => p0
-              .map((e) =>
-                  (e.readTable(table), $$PersonTableReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: ({photoRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (photoRefs) db.photo],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (photoRefs)
-                    await $_getPrefetchedData(
-                        currentTable: table,
-                        referencedTable:
-                            $$PersonTableReferences._photoRefsTable(db),
-                        managerFromTypedResult: (p0) =>
-                            $$PersonTableReferences(db, table, p0).photoRefs,
-                        referencedItemsForCurrentItem:
-                            (item, referencedItems) => referencedItems
-                                .where((e) => e.profileId == item.id),
-                        typedResults: items)
-                ];
-              },
-            );
-          },
-        ));
-}
-
-typedef $$PersonTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
-    $PersonTable,
-    PersonData,
-    $$PersonTableFilterComposer,
-    $$PersonTableOrderingComposer,
-    $$PersonTableCreateCompanionBuilder,
-    $$PersonTableUpdateCompanionBuilder,
-    (PersonData, $$PersonTableReferences),
-    PersonData,
-    PrefetchHooks Function({bool photoRefs})>;
 typedef $$PhotoTableCreateCompanionBuilder = PhotoCompanion Function({
   Value<int> id,
   required int profileId,
@@ -1971,12 +1977,12 @@ typedef $$PhotoTableProcessedTableManager = ProcessedTableManager<
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
+  $$PersonTableTableManager get person =>
+      $$PersonTableTableManager(_db, _db.person);
   $$ProfileTableTableManager get profile =>
       $$ProfileTableTableManager(_db, _db.profile);
   $$FriendTableTableManager get friend =>
       $$FriendTableTableManager(_db, _db.friend);
-  $$PersonTableTableManager get person =>
-      $$PersonTableTableManager(_db, _db.person);
   $$PhotoTableTableManager get photo =>
       $$PhotoTableTableManager(_db, _db.photo);
 }

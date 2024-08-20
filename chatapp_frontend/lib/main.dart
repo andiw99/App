@@ -2,8 +2,11 @@
 import 'dart:async';
 import 'package:chatapp_frontend/pages/loginpage.dart';
 import 'package:chatapp_frontend/pages/profile.dart';
+import 'package:chatapp_frontend/src/database.dart';
+import 'package:chatapp_frontend/src/repository.dart';
 import 'package:chatapp_frontend/src/themes/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'dart:convert';
@@ -15,10 +18,27 @@ import 'pages/friends.dart';
 
 String token = "";      // TODO this is placeholder for now for a token that is somewhere stored persistently
 String username = "";
+AppDatabase driftDatabaseInstance = AppDatabase();
+RepositoryClient repositoryClient = DriftRepositoryClient();
 // String baseURL = "http://192.168.178.96:8000";
 
 void main() {
+  //driftDatabase = AppDatabase();
+  // WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const MyApp());
+  // print("\n\n\n");
+  // print(await getApplicationDocumentsDirectory());
+  // print("\n\n\n");
+  // driftDatabaseInstance = AppDatabase();
+  // await driftDatabaseInstance.into(driftDatabaseInstance.profile).insert(ProfileCompanion.insert(username: "Andi", email: "andy.weitzel99@gmail.com", token: "33d060dc7d59e37fad2f0a874d6e6b2ab46554df"));
+  // (await driftDatabaseInstance.select(driftDatabaseInstance.profile).get()).forEach(print);
+  // // final profileInst = await driftDatabaseInstance.select(driftDatabaseInstance.profile)..where((t) => t.username.equals("Andi"));
+  // // await driftDatabaseInstance.delete($ProfileTable(driftDatabaseInstance)).go();
+  // await (driftDatabaseInstance.delete(driftDatabaseInstance.profile)..where((t) => t.username.equals("Andi"))).go();
+  // (await driftDatabaseInstance.select(driftDatabaseInstance.profile).get()).forEach(print);
+
+
 }
 
 class MyPage extends StatelessWidget {

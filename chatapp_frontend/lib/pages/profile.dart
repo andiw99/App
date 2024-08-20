@@ -33,7 +33,7 @@ class ProfileScreen extends StatelessWidget {
                     width: 120,
                     height: 120,
                     child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100), child:  Image.asset('assets/images/profile.png')),
+                        borderRadius: BorderRadius.circular(100), child:  Image.asset(profilePicturePath)),
                   ),
                   // Positioned(
                   //   bottom: 0,

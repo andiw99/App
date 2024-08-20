@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'chat',
     'rest_framework',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'phonenumber_field',
 ]
 
 # Set the user that is used for authentication?
@@ -106,7 +107,7 @@ DATABASES = {
         #'NAME': '...',              # Is this just the name or do I need a path?
         #'USER': '...',                 # I am using postgres user now... could also use andi but I think postgres has more rights
         "OPTIONS": {
-            "service": "app_service2",        # this is the file where the connection details to the DB are written?
+            "service": "app_service3",        # this is the file where the connection details to the DB are written?
             "passfile": ".app_pgpass2",       # this is some authentication to connect to the DB
         },
         "PASSWORD": env('DATABASE_PASS')

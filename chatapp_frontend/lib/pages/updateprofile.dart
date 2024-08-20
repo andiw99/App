@@ -1,8 +1,31 @@
+import 'package:chatapp_frontend/main.dart';
 import 'package:chatapp_frontend/src/constants.dart';
 import 'package:flutter/material.dart';
 
-class UpdateProfileInfo extends StatelessWidget {
+class UpdateProfileInfo extends StatefulWidget {
   const UpdateProfileInfo({super.key});
+
+  @override
+  State<UpdateProfileInfo> createState() => _UpdateProfileInfoState();
+}
+
+class _UpdateProfileInfoState extends State<UpdateProfileInfo> {
+
+  Map<String, dynamic> profileData ={};
+
+  @override
+  void initState() {
+    super.initState();
+    _populateForm();    
+  }
+
+  Future<void> _populateForm() async {
+      var profileDataRepo = await repositoryClient.getProfile();
+      setState(() {
+        profileData = profileDataRepo;
+      });
+      print(profileData['username']);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,29 +68,36 @@ class UpdateProfileInfo extends StatelessWidget {
               Center(                
                 child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: formWidth),
-                    child: Form(                
+                    child: Form(
+                      key: Key(profileData.toString()),                
                     child: Column(
                       children: [
                         TextFormField(
-                          initialValue: firstName, // TODO replace initial values with actual values from DB (and or server?)
+                          initialValue: profileData['username'] ?? "", // if username does not exist, empty string
+                          decoration: const InputDecoration(
+                              label: Text(usernameString), prefixIcon: Icon(Icons.badge)),
+                        ),
+                        const SizedBox(height: formHeight),
+                        TextFormField(
+                          initialValue: profileData['firstName'] ?? "", // TODO replace initial values with actual values from DB (and or server?)
                           decoration: const InputDecoration(
                               label: Text(firstNameString), prefixIcon: Icon(Icons.person)),
                         ),
                         const SizedBox(height: formHeight),
                         TextFormField(
-                          initialValue: lastName,
+                          initialValue: profileData['lastName'] ?? "",
                           decoration: const InputDecoration(
-                              label: Text(lastNameString), prefixIcon: Icon(Icons.person)),
+                              label: Text(lastNameString), prefixIcon: Icon(Icons.person_outline)),
                         ),
                         const SizedBox(height: formHeight),
                         TextFormField(
-                          initialValue: email,
+                          initialValue: profileData['email'] ?? "",
                           decoration: const InputDecoration(
                               label: Text(emailString), prefixIcon: Icon(Icons.email)),
                         ),
                         const SizedBox(height: formHeight),
                         TextFormField(
-                          initialValue: phoneNumber,
+                          initialValue: profileData['phoneNumber'] ?? "",
                           decoration: const InputDecoration(
                               label: Text(phoneNumberString), prefixIcon: Icon(Icons.phone)),
                         ),

@@ -201,11 +201,8 @@ def declineFriendrequest(request):
 from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 @api_view(['POST'])
-def signUpView(request):  
-    print(request.POST)  
+def signUpView(request):      
     form = UserCreateForm(request.POST)
-    print(form)
-    print(form.is_valid())
     if form.is_valid():            # then we save the user? 
         new_user = form.save()
         return JsonResponse({'statuscode': 200, 'statusmessage': 'successfully registered. Please log in'})                    
@@ -218,5 +215,5 @@ def signUpView(request):
 def getUserInfo(request):
     user = request.user
     # We just serialize this user and send it back
-
-    return Response({"status": "friend request denied"})
+    serializer = UserSerializer(user)
+    return Response(serializer.data)

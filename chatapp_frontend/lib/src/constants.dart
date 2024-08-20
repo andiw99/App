@@ -1,7 +1,8 @@
-// URLs
 import 'package:flutter/material.dart';
-
+// URLs / Networking
 const baseURL = "http://192.168.178.96:8000";
+const tokenAuthURL = "api-token-auth";
+const getUserInfoUrl = "get-user-info";
 
 // Strings
 const String editProfile = "Edit Profile";
@@ -9,6 +10,7 @@ const String editBiography = "Edit Biography";
 const String editGallery = "Edit Gallery";
 const String profile = "Profile";
 // const String username = "Andi";     // as long as we don't have a cache, we either use these or global variables
+const String usernameString = "Username";
 const String email = "andy.weitzel99@gmail.com";
 const String firstName = "Andreas";
 const String lastName = "Weitzel";

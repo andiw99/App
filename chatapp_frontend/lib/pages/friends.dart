@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:chatapp_frontend/components/horizontallign.dart';
 import 'package:chatapp_frontend/main.dart';
 import 'package:chatapp_frontend/pages/chatroom.dart';
+import 'package:chatapp_frontend/src/repository.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
@@ -23,6 +24,9 @@ class _FriendsPageState extends State<FriendsPage> {
   bool _isSearching = false;
   var client = http.Client();
 
+  RepositoryClient repositoryClient = DriftRepositoryClient();
+
+
   @override
   void initState() {
     super.initState();
@@ -38,7 +42,7 @@ class _FriendsPageState extends State<FriendsPage> {
       retrieveURL,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Token $token'
+        'Authorization': 'Token ${(await repositoryClient.getToken())}'
       }, // I think the header was called authorization?
     ))
         .body);
