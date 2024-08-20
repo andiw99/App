@@ -1,0 +1,14 @@
+chatapp_backend/app_pgpass.conf
+/chatapp_backend/app_pgpass.conf
+chatapp_backend/app_pgpass2.conf
+/chatapp_backend/app_pgpass2.conf
+chatapp_backend/app_pgpass3.conf
+/chatapp_backend/app_pgpass3.conf
+chatapp_backend/.env
+/chatapp_backend/.env
+chatapp_backend/chatapp_backend/.env
+/chatapp_backend/chatapp_backend/.env
+./venv
+.venv
+/.venv
+.venv/
