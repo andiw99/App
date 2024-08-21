@@ -73,7 +73,7 @@ class _ChatsPageState extends State<ChatsPage> {
               retrieveURL,
               headers: <String, String>{
                 'Content-Type': 'application/json; charset=UTF-8',
-                'Authorization': 'Token $token'
+                'Authorization': 'Token ${userMemoryClient.getToken()}'
               }, // I think the header was called authorization?
               );
     List chatsListServer = [];

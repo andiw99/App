@@ -38,6 +38,7 @@ class _FriendsPageState extends State<FriendsPage> {
   void _retrieveFriends() async {
     // Placeholder for the function to retrieve the list of friends
     // Replace this with your implementation to fetch friends
+    if(userMemoryClient.getToken().isNotEmpty) {
     var retrieveURL = Uri.parse('$baseURL/get-friends/');
     final response = jsonDecode((await client.get(
       retrieveURL,
@@ -57,18 +58,20 @@ class _FriendsPageState extends State<FriendsPage> {
           receivedFriendsList; //['Alice', 'Bob', 'Charlie', 'David', 'Eve'];
       _filteredFriendsList = _friendsList;
     });
+    }
   }
 
   void _retrieveFriendRequests() async {
     // Placeholder for the function to retrieve the list of friends
     // Replace this with your implementation to fetch friends
+    if(userMemoryClient.getToken().isNotEmpty) {
     var retrieveURL =
         Uri.parse('$baseURL/get-friendrequests/');
     final response = jsonDecode((await client.get(
       retrieveURL,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Token $token'
+        'Authorization': 'Token ${userMemoryClient.getToken()}'
       }, // I think the header was called authorization?
     ))
         .body);
@@ -79,7 +82,7 @@ class _FriendsPageState extends State<FriendsPage> {
     }
     setState(() {
       _friendRequests = receivedFriendRequests;
-    });
+    }); }
   }
 
   void _searchNewFriends(String query) async {
@@ -90,7 +93,7 @@ class _FriendsPageState extends State<FriendsPage> {
       retrieveURL,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Token $token'
+        'Authorization': 'Token ${userMemoryClient.getToken()}'
       }, // I think the header was called authorization?
     ))
         .body);
@@ -133,7 +136,7 @@ class _FriendsPageState extends State<FriendsPage> {
     var response = jsonDecode((await client.post(retrieveURL,
             headers: <String, String>{
               'Content-Type': 'application/x-www-form-urlencoded',
-              'Authorization': 'Token $token'
+              'Authorization': 'Token ${userMemoryClient.getToken()}'
             },
             body: message))
         .body) as Map<String, dynamic>;
@@ -153,7 +156,7 @@ class _FriendsPageState extends State<FriendsPage> {
       retrieveURL,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Token $token'
+        'Authorization': 'Token ${userMemoryClient.getToken()}'
       }, // I think the header was called authorization?
     )).body);
     setState(() {
@@ -171,7 +174,7 @@ class _FriendsPageState extends State<FriendsPage> {
       retrieveURL,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Token $token'
+        'Authorization': 'Token ${userMemoryClient.getToken()}'
       }, // I think the header was called authorization?
     )).body);
     setState(() {
@@ -191,7 +194,7 @@ class _FriendsPageState extends State<FriendsPage> {
     var groupData = jsonDecode((await client.post(retrieveURL,
             headers: <String, String>{
               'Content-Type': 'application/x-www-form-urlencoded',
-              'Authorization': 'Token $token'
+              'Authorization': 'Token ${userMemoryClient.getToken()}'
             },
             body: message))
         .body) as Map<String, dynamic>;

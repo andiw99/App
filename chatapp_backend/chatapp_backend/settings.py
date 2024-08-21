@@ -44,13 +44,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'chat',
+    'profiles',
+    'friends',
     'rest_framework',
     'rest_framework.authtoken',
     'phonenumber_field',
 ]
 
 # Set the user that is used for authentication?
-AUTH_USER_MODEL = 'chat.MyUser'
+AUTH_USER_MODEL = 'profiles.MyUser'
 
 ASGI_APPLICATION = 'chatapp_backend.asgi.application'
 

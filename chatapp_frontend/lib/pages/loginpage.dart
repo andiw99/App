@@ -80,12 +80,17 @@ class _LoginPageState extends State<LoginPage> {
         print("\n\n\nBefore add Profile call");
         // TODO remove at some point
         // await (driftDatabaseInstance.delete(driftDatabaseInstance.profile)..where((t) => t.username.equals("Andi"))).go();
-        repoClient.addProfile(userInfoMap);
+        repoClient.addProfile(userInfoMap); // I guess you could call this design by contract because I am building upon the fact that userInfoMap has the 'correct' keys...
+        userMemoryClient.initializeUser(
+          userInfoMap['username'],
+          userInfoMap['email'],
+          userInfoMap['firstName'],
+          userInfoMap['lastName'],
+          userInfoMap['phoneNumber'],
+          userInfoMap['token']);    // This is I guess a bit more save since what parameters go in is controlled from here, but also way more tedious...
         print("After add Profile call\n\n\n");
         setState(() {
-
-          token = tokenMap["token"];          // We will keep this for now because of the many places where I used the global token, but actually we should get it from the repo now.
-          username = usernameController.text;
+          final username = usernameController.text;
           showTopSnackBar(
             Overlay.of(context),
             CustomSnackBar.success(
@@ -117,11 +122,13 @@ class _LoginPageState extends State<LoginPage> {
     //}
     print("Widget.logout: ${widget.logout}");
     if (widget.logout) {
-      token = "";
+      // Instead of setting the token to zero, we remove the user from the persistent DB and the memory DB
+      userMemoryClient.deleteUser();  // schön wieder zwei verschiedene namen dafür
+      repoClient.deleteProfile();
       // I think we need to reset logout then...
       widget.logout = false;
     }
-    if (token.isNotEmpty) {
+    if (userMemoryClient.getToken().isNotEmpty) {
       return const MyHomePage(title: "Best App ever after login");
     }
     return Scaffold(

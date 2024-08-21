@@ -52,8 +52,8 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 10),
-              Text(username, style: Theme.of(context).textTheme.headlineMedium),
-              Text(email, style: Theme.of(context).textTheme.bodyMedium),
+              Text(userMemoryClient.getUsername(), style: Theme.of(context).textTheme.headlineMedium),    // TODO for stuff like this I almost imagine It would be nice to have an in-memory cache that does not have to await responses from DB or Django, so that one can more easily build up stateless widgets. But the best practices in-memory repo of flutter works also asynchronous...
+              Text(userMemoryClient.getEmail(), style: Theme.of(context).textTheme.bodyMedium),
               const SizedBox(height: 20),
 
               /// -- BUTTON
@@ -107,7 +107,7 @@ class ProfileScreen extends StatelessWidget {
                           Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => LoginPage(logout: token.isNotEmpty),
+                            builder: (context) => LoginPage(logout: userMemoryClient.getToken().isNotEmpty),
                           ),
                         );
                   }),

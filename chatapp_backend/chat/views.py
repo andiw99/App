@@ -8,10 +8,8 @@ from django.shortcuts import get_object_or_404
 from .models import *
 from .consumers import NR_LOADED_MESSAGES
 from .serializers import *
-import json
-from .models import MyUser as User
+from profiles.models import MyUser as User
 from .models import ChatGroup
-from .forms import UserCreateForm, MyUserChangeForm
 
 @api_view(['GET'])
 def getEndpoint(request):
@@ -53,12 +51,6 @@ def getChatMessages(request):
     return Response(serializer.data)
 
 
-@api_view(['GET', 'POST'])
-def getAuthentication(request):    
-    serializer = AuthorSerializer(request.user)
-
-    return Response(serializer.data)
-
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -73,48 +65,6 @@ def getChatrooms(request):
 
     return Response(serializer.data)
 
-
-@api_view(['GET'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def getFriends(request):
-    # Alright, so we need to login the user or is it automatically logged in if the authentication works right?
-    # Is it now using this TokenAuthMiddleWarestack or not?
-    # supposed it already works, 
-    user = request.user
-    print(f"User: {user}")
-    friends = user.friends.all()
-    print(friends)
-    serializer = FriendsSerializer(friends, many=True)
-
-    return Response(serializer.data)
-
-@api_view(['GET'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def getFriendRequests(request):
-    user = request.user
-    
-    friendrequests = user.received_friendrequests.all().order_by('-datetime')
-    print(friendrequests)
-    serializer = FriendrequestSerializer(friendrequests, many=True)
-
-    return Response(serializer.data)
-
-@api_view(['GET'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def searchFriends(request):
-    # Alright, so we need to login the user or is it automatically logged in if the authentication works right?
-    # Is it now using this TokenAuthMiddleWarestack or not?
-    # supposed it already works, 
-    user = request.user
-    querystring = request.GET.get('username')
-    friends = User.objects.filter(username__icontains=querystring).exclude(username__in=user.friends.all().values('username'))
-
-    serializer = FriendsSerializer(friends, many=True)
-
-    return Response(serializer.data)
 
 
 @api_view(['POST'])
@@ -142,89 +92,4 @@ def createGroup(request):
     return Response(ChatGroupSerializer(group).data)
 
 
-@api_view(['POST'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def sendFriendrequest(request):
-    sender = request.user
-    body = request.POST
 
-    receiver_name = body.get('username')
-    receiver = get_object_or_404(MyUser, username=receiver_name)
-
-    # existing_friendrequest = FriendRequest.objects.filter(sender=sender, receiver=receiver).exists()
-    if FriendRequest.objects.filter(sender=sender, receiver=receiver).exists():
-        return Response({"status": "friend request already pending"})
-    else:
-        # Create the request
-        friendrequest = FriendRequest(sender=sender, receiver=receiver)
-        friendrequest.save()    
-
-        # We should return something like a statuscode?
-        return Response({"status": "friend request sent"})
-
-@api_view(['GET'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def acceptFriendrequest(request):
-    receiver = request.user
-    sender_name = request.GET.get('username')   # decided for querystring
-
-    sender = get_object_or_404(MyUser, username=sender_name)
-
-    # Retrieve the request
-    friendrequest = get_object_or_404(FriendRequest, sender=sender, receiver=receiver)
-    friendrequest.accept(receiver)          # Not sure if the check i implemented in accept is even needed    
-
-    # We should return something like a statuscode?
-    return Response({"status": "friend request accepted"})
-
-
-@api_view(['GET'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def declineFriendrequest(request):
-    receiver = request.user
-    sender_name = request.GET.get('username')   # decided for querystring
-
-    sender = get_object_or_404(MyUser, username=sender_name)
-
-    # Retrieve the request
-    friendrequest = get_object_or_404(FriendRequest, sender=sender, receiver=receiver)
-    friendrequest.decline(receiver)          # Not sure if the check i implemented in accept is even needed    
-
-    # We should return something like a statuscode?
-    return Response({"status": "friend request denied"})
-
-
-# TODO we will do this with flutter if this someday goes to production
-from django.views.decorators.csrf import csrf_exempt
-@csrf_exempt
-@api_view(['POST'])
-def signUpView(request):      
-    form = UserCreateForm(request.POST)
-    if form.is_valid():            # then we save the user? 
-        new_user = form.save()
-        return JsonResponse({'statuscode': 200, 'statusmessage': 'successfully registered. Please log in'})                    
-    return JsonResponse({'statuscode': 400, 'statusmessage': 'error', 'errors': form.errors}, status=400)
-
-
-@api_view(['GET'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def getUserInfo(request):
-    user = request.user
-    # We just serialize this user and send it back
-    serializer = UserSerializer(user)
-    return Response(serializer.data)
-
-@csrf_exempt
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-@api_view(['POST'])
-def changeUserInfo(request):      
-    form = MyUserChangeForm(request.POST, instance=request.user)
-    if form.is_valid():            # then we save the user? 
-        new_user = form.save()
-        return JsonResponse({'statuscode': 200, 'statusmessage': 'successfully changed info'})                    
-    return JsonResponse({'statuscode': 400, 'statusmessage': 'error', 'errors': form.errors}, status=400)

@@ -17,11 +17,12 @@ import 'pages/chatroom.dart';
 import 'pages/chats.dart';
 import 'pages/friends.dart';
 
-String token = "";      // TODO this is placeholder for now for a token that is somewhere stored persistently
-String username = "";
+// String token = "";      // TODO this is placeholder for now for a token that is somewhere stored persistently
+// String username = "";
 AppDatabase driftDatabaseInstance = AppDatabase();
 RepositoryClient repositoryClient = DriftRepositoryClient();
 Api restClient = DjangoRestApi();
+UserMemoryRepository userMemoryClient = UserMemoryRepoImplementation();
 // String baseURL = "baseURL";
 
 void main() {
@@ -88,11 +89,28 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   // TODO is this the most efficient way to navigate?
 
+  @override
+  void initState() {    
+    super.initState();
+    initUser();
+  }
+
+  void initUser() async {
+    final profile = await repositoryClient.getProfile();
+    if (profile.isNotEmpty) {
+      // This means there is already a User in DB and we can initialize the memory DB
+      setState(() {
+        userMemoryClient.initializeUser(profile['username'], profile['email'], profile['firstName'], profile['lastName'], profile['phoneNumber'], profile['token']);
+        _pages[_pages.length - 1] = userMemoryClient.getToken().isEmpty ? LoginPage() : const ProfileScreen();
+      });
+    }
+  }
+
   final List<Widget> _pages = [
     const MyHomePage(title: "Best App ever, rerouted"),
     const ChatsPage(),
     const FriendsPage(),
-    token.isEmpty ? LoginPage() : const ProfileScreen(),    // TODO somehow this doesnt work when I log out and log back in again
+    userMemoryClient.getToken().isEmpty ? LoginPage() : const ProfileScreen(),    // TODO somehow this doesnt work when I log out and log back in again
   ];
   // TODO At the moment this does not even need to be a stateful widget
   @override
@@ -139,8 +157,8 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'Friends',
           ),
           NavigationDestination(
-            icon: token.isEmpty ? const Icon(Icons.lock) : const Icon(Icons.person),
-            label: token.isEmpty ? 'Login' : "Profile",
+            icon: userMemoryClient.getToken().isEmpty ? const Icon(Icons.lock) : const Icon(Icons.person),
+            label: userMemoryClient.getToken().isEmpty ? 'Login' : "Profile",
           ),
         ],
       ),

@@ -11,7 +11,7 @@ class Chatbubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-      if (author == username) {
+      if (author == userMemoryClient.getUsername()) {
     const col = Color.fromARGB(255, 133, 206, 110);
     return _buildOwnChatBubble(context, author, msg, col);
   } else {

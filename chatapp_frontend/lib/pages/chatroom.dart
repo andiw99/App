@@ -79,7 +79,7 @@ class ChatFormState extends State<ChatForm> {
         "Connecting with querystring and roomidentifier ${widget.roomIdentifier}");
     _channel = WebSocketChannel.connect(Uri.parse(uri), protocols: [
       "connectProtocol",
-      "Token $token"
+      "Token ${userMemoryClient.getToken()}"
     ]); // connectProtocol should actually the subprotocol that client and server can agree on. I dont think it has relevance here
     // This is a constructor so that i make sure that _channel is initialized before I am going to use it.
     // TODO I think I cant use _channel?  Everytime i get the error 'each child must be laid out exactly once'
@@ -219,7 +219,7 @@ class ChatFormState extends State<ChatForm> {
       await _channel.ready;
       var controllertext = _controller.text;
       var jsonMessage =
-          jsonEncode({'author': username, 'message': controllertext});
+          jsonEncode({'author': userMemoryClient.getUsername(), 'message': controllertext});
       _channel.sink.add(jsonMessage); // this should directly send the message?
       print("_sendMessage method called");
 
@@ -252,7 +252,7 @@ class ChatFormState extends State<ChatForm> {
       retrieveURL,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Token $token'
+        'Authorization': 'Token ${userMemoryClient.getToken()}'
       },
     ))
         .body); // TODO in a get request you can send headers, you probably need to handle the authorization with this
