@@ -4,6 +4,7 @@ import 'package:chatapp_frontend/pages/loginpage.dart';
 import 'package:chatapp_frontend/pages/profile.dart';
 import 'package:chatapp_frontend/src/database.dart';
 import 'package:chatapp_frontend/src/repository.dart';
+import 'package:chatapp_frontend/src/restapi.dart';
 import 'package:chatapp_frontend/src/themes/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -20,7 +21,8 @@ String token = "";      // TODO this is placeholder for now for a token that is 
 String username = "";
 AppDatabase driftDatabaseInstance = AppDatabase();
 RepositoryClient repositoryClient = DriftRepositoryClient();
-// String baseURL = "http://192.168.178.96:8000";
+Api restClient = DjangoRestApi();
+// String baseURL = "baseURL";
 
 void main() {
   //driftDatabase = AppDatabase();
@@ -35,10 +37,8 @@ void main() {
   // (await driftDatabaseInstance.select(driftDatabaseInstance.profile).get()).forEach(print);
   // // final profileInst = await driftDatabaseInstance.select(driftDatabaseInstance.profile)..where((t) => t.username.equals("Andi"));
   // // await driftDatabaseInstance.delete($ProfileTable(driftDatabaseInstance)).go();
-  // await (driftDatabaseInstance.delete(driftDatabaseInstance.profile)..where((t) => t.username.equals("Andi"))).go();
+  // (driftDatabaseInstance.delete(driftDatabaseInstance.profile)..where((t) => t.username.equals("Andi"))).go();
   // (await driftDatabaseInstance.select(driftDatabaseInstance.profile).get()).forEach(print);
-
-
 }
 
 class MyPage extends StatelessWidget {

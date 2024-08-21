@@ -11,7 +11,7 @@ from .serializers import *
 import json
 from .models import MyUser as User
 from .models import ChatGroup
-from .forms import UserCreateForm
+from .forms import UserCreateForm, MyUserChangeForm
 
 @api_view(['GET'])
 def getEndpoint(request):
@@ -217,3 +217,14 @@ def getUserInfo(request):
     # We just serialize this user and send it back
     serializer = UserSerializer(user)
     return Response(serializer.data)
+
+@csrf_exempt
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+@api_view(['POST'])
+def changeUserInfo(request):      
+    form = MyUserChangeForm(request.POST, instance=request.user)
+    if form.is_valid():            # then we save the user? 
+        new_user = form.save()
+        return JsonResponse({'statuscode': 200, 'statusmessage': 'successfully changed info'})                    
+    return JsonResponse({'statuscode': 400, 'statusmessage': 'error', 'errors': form.errors}, status=400)

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:chatapp_frontend/components/chatbubble.dart';
 import 'package:chatapp_frontend/main.dart';
 import 'package:chatapp_frontend/pages/loginpage.dart';
+import 'package:chatapp_frontend/src/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -71,9 +72,9 @@ class ChatFormState extends State<ChatForm> {
     // Streambuilder misses some messages if they are sent concurrent, this is not good so I need to somehow manually listen to the incoming messages
 // If i build the widget here, should I connect to the websocket here?
     // URL
-    // uri = 'ws://192.168.178.96:8000/ws/socket-server/';
+    // uri = '$wsURL/ws/socket-server/';
     final uri =
-        'ws://192.168.178.96:8000/ws/socket-server/?chatroom=${widget.roomIdentifier}';
+        '$wsURL/ws/socket-server/?chatroom=${widget.roomIdentifier}';
     print(
         "Connecting with querystring and roomidentifier ${widget.roomIdentifier}");
     _channel = WebSocketChannel.connect(Uri.parse(uri), protocols: [
@@ -99,7 +100,7 @@ class ChatFormState extends State<ChatForm> {
   @override
   Widget build(BuildContext context) {
 /*     StreamSubscription sub = WebSocketChannel.connect(
-            Uri.parse('ws://192.168.178.96:8000/ws/socket-server/')).stream.listen((value) {
+            Uri.parse('$wsURL/ws/socket-server/')).stream.listen((value) {
       // This catches every message now
       // if (value.hasData) in contrast to inside the streambuilder, this is just a string
       final jsonMessage = jsonDecode(value) as Map<String, dynamic>;
@@ -246,7 +247,7 @@ class ChatFormState extends State<ChatForm> {
 
     // TODO in the future, this URL somehow needs to be build from the chatroom we are currently in
     var retrieveURL = Uri.parse(
-        'http://192.168.178.96:8000/getChatMessages/?em=${messages.length}&cr=${widget.roomIdentifier}');
+        '$baseURL/getChatMessages/?em=${messages.length}&cr=${widget.roomIdentifier}');
     List response = jsonDecode((await client.get(
       retrieveURL,
       headers: <String, String>{

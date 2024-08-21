@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:chatapp_frontend/components/horizontallign.dart';
 import 'package:chatapp_frontend/main.dart';
 import 'package:chatapp_frontend/pages/chatroom.dart';
+import 'package:chatapp_frontend/src/constants.dart';
 import 'package:chatapp_frontend/src/repository.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -37,7 +38,7 @@ class _FriendsPageState extends State<FriendsPage> {
   void _retrieveFriends() async {
     // Placeholder for the function to retrieve the list of friends
     // Replace this with your implementation to fetch friends
-    var retrieveURL = Uri.parse('http://192.168.178.96:8000/get-friends/');
+    var retrieveURL = Uri.parse('$baseURL/get-friends/');
     final response = jsonDecode((await client.get(
       retrieveURL,
       headers: <String, String>{
@@ -62,7 +63,7 @@ class _FriendsPageState extends State<FriendsPage> {
     // Placeholder for the function to retrieve the list of friends
     // Replace this with your implementation to fetch friends
     var retrieveURL =
-        Uri.parse('http://192.168.178.96:8000/get-friendrequests/');
+        Uri.parse('$baseURL/get-friendrequests/');
     final response = jsonDecode((await client.get(
       retrieveURL,
       headers: <String, String>{
@@ -84,7 +85,7 @@ class _FriendsPageState extends State<FriendsPage> {
   void _searchNewFriends(String query) async {
     print("Search new friends called");
     var retrieveURL = Uri.parse(
-        'http://192.168.178.96:8000/search-friends/?username=$query'); // should we use post or a querystring? Probably querstring?
+        '$baseURL/search-friends/?username=$query'); // should we use post or a querystring? Probably querstring?
     final response = jsonDecode((await client.get(
       retrieveURL,
       headers: <String, String>{
@@ -128,7 +129,7 @@ class _FriendsPageState extends State<FriendsPage> {
   void _sendFriendRequest(String username) async {
     var message = {"username": username};
     // well we now have to send an http get? request to receive the token
-    var retrieveURL = Uri.parse('http://192.168.178.96:8000/send-friendrequest/');
+    var retrieveURL = Uri.parse('$baseURL/send-friendrequest/');
     var response = jsonDecode((await client.post(retrieveURL,
             headers: <String, String>{
               'Content-Type': 'application/x-www-form-urlencoded',
@@ -147,7 +148,7 @@ class _FriendsPageState extends State<FriendsPage> {
 
   void _acceptFriendRequest(String username) async {
     var retrieveURL = Uri.parse(
-        'http://192.168.178.96:8000/accept-friendrequest/?username=$username'); // should we use post or a querystring? Probably querstring?
+        '$baseURL/accept-friendrequest/?username=$username'); // should we use post or a querystring? Probably querstring?
     final response = jsonDecode((await client.get(
       retrieveURL,
       headers: <String, String>{
@@ -165,7 +166,7 @@ class _FriendsPageState extends State<FriendsPage> {
 
   void _declineFriendRequest(String username) async {
         var retrieveURL = Uri.parse(
-        'http://192.168.178.96:8000/decline-friendrequest/?username=$username'); // should we use post or a querystring? Probably querstring?
+        '$baseURL/decline-friendrequest/?username=$username'); // should we use post or a querystring? Probably querstring?
     final response = jsonDecode((await client.get(
       retrieveURL,
       headers: <String, String>{
@@ -186,7 +187,7 @@ class _FriendsPageState extends State<FriendsPage> {
     // Replace this with your implementation to start a new chat with the friend
     var message = {"users": friendName, "groupname": ""};
     // well we now have to send an http get? request to receive the token
-    var retrieveURL = Uri.parse('http://192.168.178.96:8000/create-group/');
+    var retrieveURL = Uri.parse('$baseURL/create-group/');
     var groupData = jsonDecode((await client.post(retrieveURL,
             headers: <String, String>{
               'Content-Type': 'application/x-www-form-urlencoded',

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:core';
 import 'package:chatapp_frontend/main.dart';
 import 'package:chatapp_frontend/pages/chatroom.dart';
+import 'package:chatapp_frontend/src/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -64,7 +65,7 @@ class _ChatsPageState extends State<ChatsPage> {
 
   void _loadChats() async {
     // The retrieve url will have to be implemented in the backend
-    var retrieveURL = Uri.parse('http://192.168.178.96:8000/get-chats/');
+    var retrieveURL = Uri.parse('$baseURL/get-chats/');
     // What should be the datastructure that we use to receive the chats
     // A map with Identifier and display name?
     // The request that we send will be a get? request to a specific URL with our token as header

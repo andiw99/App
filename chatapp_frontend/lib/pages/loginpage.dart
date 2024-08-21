@@ -78,6 +78,8 @@ class _LoginPageState extends State<LoginPage> {
         userInfoMap['token'] = tokenMap["token"];
         // Here we now want to persist the userdata
         print("\n\n\nBefore add Profile call");
+        // TODO remove at some point
+        // await (driftDatabaseInstance.delete(driftDatabaseInstance.profile)..where((t) => t.username.equals("Andi"))).go();
         repoClient.addProfile(userInfoMap);
         print("After add Profile call\n\n\n");
         setState(() {

@@ -13,7 +13,7 @@ abstract class RepositoryClient {
 
   Future<Map<String, dynamic>> getProfile();   // should probably actually be a map or something
   
-
+  Future<int> updateProfile(Map<String, dynamic> userInfo, String username);
 }
 
 class DriftRepositoryClient extends RepositoryClient {
@@ -55,5 +55,15 @@ class DriftRepositoryClient extends RepositoryClient {
 
         return profile.toJson();
       }
+      
+        @override
+        Future<int> updateProfile(Map<String, dynamic> userInfo, String username) async {
+          return (await (database.update(database.profile)..where((t) => t.username.equals(username))).write(ProfileCompanion(
+            firstName: Value(userInfo['first_name']),
+            lastName: Value(userInfo['last_name']),
+            email: Value(userInfo['email']),
+            phoneNumber: Value(userInfo['phone_number'])
+          )));
+        }
 
 }

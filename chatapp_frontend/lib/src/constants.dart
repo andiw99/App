@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 // URLs / Networking
 const baseURL = "http://192.168.178.96:8000";
+const wsURL = "ws://192.168.178.96:8000";
 const tokenAuthURL = "api-token-auth";
 const getUserInfoUrl = "get-user-info";
+const changeUserInfoUrl = "change-user-info";
 
 // Strings
 const String editProfile = "Edit Profile";

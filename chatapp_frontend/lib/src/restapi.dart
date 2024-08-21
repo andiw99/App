@@ -13,6 +13,9 @@ abstract class Api {
   Future<Map<String, dynamic>> apiTokenAuth(String username, String password);
 
   Future<Map<String, dynamic>> getProfileInfo(String token);
+  
+  Future<Map<String, dynamic>> changeProfileInfo(String token, Map<String, dynamic> formData);
+
 }
 
 class DjangoRestApi extends Api {
@@ -50,4 +53,22 @@ class DjangoRestApi extends Api {
     print(infoMap);
     return infoMap;
   }
+  
+  @override
+  Future<Map<String, dynamic>> changeProfileInfo(String token, Map<String, dynamic> formData) async {
+    var retrieveURL = Uri.parse('$baseURL/$changeUserInfoUrl/');
+  print("Vor senden");
+  print(formData);
+    var userInfoMap = jsonDecode((await client.post(retrieveURL,
+            headers: <String, String>{
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Authorization': 'Token $token'
+            },
+            body: formData))
+        .body) as Map<String, dynamic>;
+
+    return userInfoMap;
+  }
+
+
 }
