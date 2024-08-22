@@ -7,6 +7,8 @@ import 'package:chatapp_frontend/pages/updategallery.dart';
 import 'package:chatapp_frontend/pages/updateprofile.dart';
 import 'package:chatapp_frontend/src/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 
 class ProfileScreen extends StatelessWidget {
@@ -104,17 +106,38 @@ class ProfileScreen extends StatelessWidget {
                   textColor: Colors.red,
                   endIcon: false,
                   onPress: () {
-                          Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => LoginPage(logout: userMemoryClient.getToken().isNotEmpty),
-                          ),
-                        );
+                          _logout(context);
+                          // Navigator.pushNamed(context, "/login", arguments: {'logout': userMemoryClient.getToken().isNotEmpty});
+                          Navigator.pushNamedAndRemoveUntil(context, "/login", ModalRoute.withName("/home"));
+                          // Navigator.push(
+                          // context,
+                          // MaterialPageRoute(
+                          //   builder: (context) => LoginPage(logout: userMemoryClient.getToken().isNotEmpty),
+                          //   ),
+                          // );
                   }),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _logout(BuildContext context) {
+        if (userMemoryClient.getToken().isNotEmpty) {
+      // Instead of setting the token to zero, we remove the user from the persistent DB and the memory DB
+      userMemoryClient.deleteUser();  // schön wieder zwei verschiedene namen dafür
+      repositoryClient.deleteProfile();
+      // I think we need to reset logout then...      
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        showTopSnackBar(
+          Overlay.of(context),
+          const CustomSnackBar.info(
+            message:
+                "Logged out",
+          ),
+      );
+      });
+    }
   }
 }

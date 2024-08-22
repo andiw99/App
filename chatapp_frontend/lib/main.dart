@@ -29,7 +29,8 @@ void main() {
   //driftDatabase = AppDatabase();
   // WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(const MyApp());
+  runApp(const MyApp(
+  ));
   // print("\n\n\n");
   // print(await getApplicationDocumentsDirectory());
   // print("\n\n\n");
@@ -62,6 +63,12 @@ class MyApp extends StatelessWidget {
       theme: MyAppTheme.lightTheme,
       themeMode: ThemeMode.system,
       home: const MyHomePage(title: 'Best App Ever'),
+      routes: {
+        // '/': (context) => const MyHomePage(title: "Homepage per route"),
+        '/login': (context) => const LoginPage(),
+        '/home': (context) => const MyHomePage(title: "Homepage via route",),
+
+      }
     );
   }
 }
@@ -134,12 +141,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ),      
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
-          setState(() {
             Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => _pages[index]),
-                    );
-          });
+                    ).then((_) => setState(() { 
+                      _pages[_pages.length - 1] = userMemoryClient.getToken().isEmpty ? const LoginPage() : const ProfileScreen();                     
+                    }));
         },
          destinations: <Widget>[
           const NavigationDestination(
@@ -166,5 +173,13 @@ class _MyHomePageState extends State<MyHomePage> {
          child: Image.asset('assets/images/App-Icon-transparent.png'),
       ),// This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Any logic to rebuild the screen can be placed here
+    setState(() { 
+                      _pages[_pages.length - 1] = userMemoryClient.getToken().isEmpty ? const LoginPage() : const ProfileScreen();                     
+                    });
   }
 }

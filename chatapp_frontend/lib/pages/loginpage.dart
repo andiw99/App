@@ -12,8 +12,7 @@ import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class LoginPage extends StatefulWidget {
-  bool logout;
-  LoginPage({super.key, this.logout = false});
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -33,17 +32,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    if(widget.logout) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        showTopSnackBar(
-          Overlay.of(context),
-          const CustomSnackBar.info(
-            message:
-                "Logged out",
-          ),
-      );
-    });}
-    
   }
 
   // sign user in method
@@ -89,8 +77,7 @@ class _LoginPageState extends State<LoginPage> {
           userInfoMap['phoneNumber'],
           userInfoMap['token']);    // This is I guess a bit more save since what parameters go in is controlled from here, but also way more tedious...
         print("After add Profile call\n\n\n");
-        setState(() {
-          final username = usernameController.text;
+        final username = usernameController.text;
           showTopSnackBar(
             Overlay.of(context),
             CustomSnackBar.success(
@@ -100,7 +87,8 @@ class _LoginPageState extends State<LoginPage> {
           // ScaffoldMessenger.of(context).showSnackBar(
           //   SnackBar(content: Text()),
           // );
-        });
+        if (mounted) Navigator.of(context).pop();
+        if (mounted) Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false);
       } else {
         // Redirect to Login with message 'unable to log in'
         showTopSnackBar(
@@ -108,8 +96,9 @@ class _LoginPageState extends State<LoginPage> {
           const CustomSnackBar.error(
               message: "Unable to login with the provided credentials."),
         );
+        if (mounted) Navigator.of(context).pop();
       }
-      if (mounted) Navigator.of(context).pop();
+
       // setState(() {});
     }
   }
@@ -120,17 +109,8 @@ class _LoginPageState extends State<LoginPage> {
     //  // TODO this is the method of logging out at the moment
     //  token = "";
     //}
-    print("Widget.logout: ${widget.logout}");
-    if (widget.logout) {
-      // Instead of setting the token to zero, we remove the user from the persistent DB and the memory DB
-      userMemoryClient.deleteUser();  // schön wieder zwei verschiedene namen dafür
-      repoClient.deleteProfile();
-      // I think we need to reset logout then...
-      widget.logout = false;
-    }
-    if (userMemoryClient.getToken().isNotEmpty) {
-      return const MyHomePage(title: "Best App ever after login");
-    }
+    // print("logout = ${widget.logout}");
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[400],
