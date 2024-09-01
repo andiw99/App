@@ -5,7 +5,8 @@ from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from .forms import MyUserChangeForm, UserCreateForm
-from .serializers import AuthorSerializer, UserSerializer
+from .serializers import AuthorSerializer, UserSerializer, GalleryPictureSerializer
+from rest_framework import status
 
 # Create your views here.
 
@@ -46,3 +47,20 @@ def changeUserInfo(request):
         new_user = form.save()
         return JsonResponse({'statuscode': 200, 'statusmessage': 'successfully changed info'})                    
     return JsonResponse({'statuscode': 400, 'statusmessage': 'error', 'errors': form.errors}, status=400)
+
+
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+@api_view(['POST'])
+def receiveUserImage(request):
+    print(request.user)
+    print(request.data)
+    request.data['owner'] = request.user.pk
+    serializer = GalleryPictureSerializer(data=request.data)
+    print(serializer.is_valid())
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)        # What is the actual difference between JsonResponse and Response
+    else:
+        print(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

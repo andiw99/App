@@ -5,6 +5,7 @@ const wsURL = "ws://192.168.178.96:8000";
 const tokenAuthURL = "api-token-auth";
 const getUserInfoUrl = "get-user-info";
 const changeUserInfoUrl = "change-user-info";
+const uploadImageUrl = "upload-gallery-image";
 
 // Strings
 const String editProfile = "Edit Profile";

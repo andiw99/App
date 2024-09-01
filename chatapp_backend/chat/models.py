@@ -40,24 +40,3 @@ class ChatMessage(models.Model):
         group_instance.modified = timezone.now()        
         group_instance.save()
         super().save(*args, **kwargs)
-
-class MyImage(models.Model):
-    image = models.ImageField(upload_to="media/images/full")
-    preview_image = models.ImageField(upload_to="media/images/preview")     # We use a smaller version of the image to send it sometimes, for example when searching through users
-    # owner = models.ForeignKey(MyUser)           # Images that are uploaded that way have a foreignkey to a user? Perspectively it might be attached to an event rather than a user..
-    # 
-    class Meta:
-        abstract = True     # abstract class, objects cannot be istantiated
-
-class UserImage(MyImage):
-    # This will be the model for images that are attached to users?
-    owner = models.ForeignKey(MyUser, on_delete=models.CASCADE)     
-
-    class Meta:
-        abstract = True     # abstract class, objects cannot be istantiated
-
-class ProfilePicture(UserImage):
-    pass # lol, but we still do this to divide gallery pictures and profile pictures
-
-class GalleryPicture(UserImage):
-    pass # lol, but we still do this to divide gallery pictures and profile pictures

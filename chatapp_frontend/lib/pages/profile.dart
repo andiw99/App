@@ -108,7 +108,7 @@ class ProfileScreen extends StatelessWidget {
                   onPress: () {
                           _logout(context);
                           // Navigator.pushNamed(context, "/login", arguments: {'logout': userMemoryClient.getToken().isNotEmpty});
-                          Navigator.pushNamedAndRemoveUntil(context, "/login", ModalRoute.withName("/home"));
+                          Navigator.pushNamedAndRemoveUntil(context, "/home", (Route<dynamic> route) => false);
                           // Navigator.push(
                           // context,
                           // MaterialPageRoute(

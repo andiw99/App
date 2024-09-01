@@ -5,6 +5,7 @@ import 'package:chatapp_frontend/pages/profile.dart';
 import 'package:chatapp_frontend/src/database.dart';
 import 'package:chatapp_frontend/src/repository.dart';
 import 'package:chatapp_frontend/src/restapi.dart';
+import 'package:chatapp_frontend/src/routes.dart';
 import 'package:chatapp_frontend/src/themes/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -63,6 +64,14 @@ class MyApp extends StatelessWidget {
       theme: MyAppTheme.lightTheme,
       themeMode: ThemeMode.system,
       home: const MyHomePage(title: 'Best App Ever'),
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case '/home':
+            return MaterialPageRoute(builder: (_) => const MyHomePage(title: "Homepage via onGenerateRoute"));
+          case '/login':
+            return MaterialPageRoute(builder: (_) => const LoginPage());
+        }
+      },
       routes: {
         // '/': (context) => const MyHomePage(title: "Homepage per route"),
         '/login': (context) => const LoginPage(),
@@ -143,9 +152,9 @@ class _MyHomePageState extends State<MyHomePage> {
         onDestinationSelected: (int index) {
             Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => _pages[index]),
+                      RebuildPageRoute(_updateState, builder: (context) => _pages[index]),    // TODO okay this works now, but I somehow think this made the app Significantly slower? What this does is, it rebuilds the underlying homepage 
                     ).then((_) => setState(() { 
-                      _pages[_pages.length - 1] = userMemoryClient.getToken().isEmpty ? const LoginPage() : const ProfileScreen();                     
+                      _pages[_pages.length - 1] = userMemoryClient.getToken().isEmpty ? const LoginPage() : const ProfileScreen();
                     }));
         },
          destinations: <Widget>[
@@ -174,6 +183,13 @@ class _MyHomePageState extends State<MyHomePage> {
       ),// This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+
+  void _updateState() {
+    setState(() { 
+                      _pages[_pages.length - 1] = userMemoryClient.getToken().isEmpty ? const LoginPage() : const ProfileScreen();                     
+                    });
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();

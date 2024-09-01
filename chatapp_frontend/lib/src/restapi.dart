@@ -2,9 +2,14 @@
 // I think it is finally time to use an adapter for the api...
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:chatapp_frontend/src/constants.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
+
+
 
 abstract class Api {
   // abstract class ?
@@ -16,6 +21,7 @@ abstract class Api {
   
   Future<Map<String, dynamic>> changeProfileInfo(String token, Map<String, dynamic> formData);
 
+  Future<int> upload(String token, XFile imageFile);
 }
 
 class DjangoRestApi extends Api {
@@ -70,5 +76,21 @@ class DjangoRestApi extends Api {
     return userInfoMap;
   }
 
+  Future<int> upload(String token, XFile imageFile) async {    
+    var stream = http.ByteStream(imageFile.openRead());
+    stream.cast();
+    var length = await imageFile.length();
+    var uri = Uri.parse("$baseURL/$uploadImageUrl/");
 
+    var request = http.MultipartRequest("POST", uri,);
+    var multipartFile = http.MultipartFile('image', stream, length,
+          filename: basename(imageFile.path));          
+          //contentType: new MediaType('image', 'png'));
+    Map<String, String> headers = { 'Authorization': 'Token $token'};
+    request.headers.addAll(headers);
+    request.files.add(multipartFile);
+    var response = await request.send();
+    print(response);
+    return response.statusCode;
+  }
 }
