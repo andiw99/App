@@ -5,10 +5,15 @@ from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from .forms import MyUserChangeForm, UserCreateForm
-from .serializers import AuthorSerializer, UserSerializer, GalleryPictureSerializer
+from .serializers import AuthorSerializer, UserSerializer, GalleryPictureSerializer, GalleryPictureNameSerializer
 from rest_framework import status
+from django.shortcuts import get_object_or_404
+from .models import GalleryPicture, ProfilePicture
+import os
+import base64
 
 # Create your views here.
+IMAGE_PATH = "media/images"
 
 @api_view(['GET', 'POST'])
 def getAuthentication(request):    
@@ -64,3 +69,61 @@ def receiveUserImage(request):
     else:
         print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def getUserImages(request):
+    # this interface should send the gallery profile picture names to Flutter
+    user = request.user
+    images = user.gallerypicture_set.all()
+    print(images)
+    serializer = GalleryPictureNameSerializer(images, many=True)
+
+    return Response(serializer.data)
+
+
+def sendImage(image_path, image_name=""):
+    try:
+        if not image_name:
+            image_name = os.path.basename(image_path)
+        # Check if file exists
+        if not os.path.isfile(image_path):
+            print("It does not somehow")
+            return JsonResponse({
+                'error': 'Image not found'
+            }, status=404)
+        
+        # Read image file
+        with open(image_path, 'rb') as image_file:
+            print("opening working")
+            # Encode image to base64
+            encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
+            
+            # Return JSON response with base64 encoded image
+            return JsonResponse({
+                'image_data': encoded_image,
+                'filename': image_name
+            })
+    
+    except Exception as e:
+        print(e)
+        return JsonResponse({
+            'error': str(e)
+        }, status=500)
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def sendGalleryImage(request):
+    print("Happening")
+    # where do we get the image names from? should be send in the body of the get request?
+    # No, probably just querystring
+    image_name = request.GET.get('name')
+    print("image_name = ", image_name)
+    image_obj = get_object_or_404(GalleryPicture, image=f"{IMAGE_PATH}/full/{image_name}")
+    # I guess we want to cache only the preview images?
+    image_path = image_obj.preview_image.path
+    print("image_path = ", image_path)
+    return sendImage(image_path, image_name)

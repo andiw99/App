@@ -6,6 +6,8 @@ from PIL import Image
 from django.core.files.base import ContentFile
 import io
 
+PREVIEW_RESOLUTION = 200
+
 # Create your models here.
 class MyUser(AbstractUser):
     friends = models.ManyToManyField("self", blank=True)
@@ -26,11 +28,9 @@ class MyImage(models.Model):
 
 
     def create_preview_image(self):
-        print("Called")
         if self.image:
-            print("Also called")
             img = Image.open(self.image)
-            img.thumbnail((100, 100))  # Adjust size as needed
+            img.thumbnail((PREVIEW_RESOLUTION, PREVIEW_RESOLUTION))  # Adjust size as needed
             thumb_io = io.BytesIO()
             img.save(thumb_io, format='JPEG')
             self.preview_image.save(

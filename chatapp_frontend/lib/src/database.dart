@@ -32,24 +32,43 @@ class Friend extends Person {
 
 }
 
-class Photo extends Table {
+class Picture extends Table {
   IntColumn get id => integer().autoIncrement()();
   // I think for every photo we should have a DB entry that points to the photo location and is referenced to a friend or profile
   IntColumn get profileId => integer().customConstraint('REFERENCES person(id) NOT NULL')();   // Foreignkey basically
   TextColumn get photoPath => text()();     // obviously not nullable, if the photo exists it should have a path
-
 }
 
-@DriftDatabase(tables: [Person, Profile, Friend, Photo])
+class GalleryPicture extends Picture {
+  // I think we need different classes for different types of photos..
+}
+
+class ProfilePicture extends Picture {
+   // but we do not need other functionality?
+}
+
+
+@DriftDatabase(tables: [Person, Profile, Friend, Picture, GalleryPicture, ProfilePicture])
 class AppDatabase extends _$AppDatabase {
 AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   static QueryExecutor _openConnection() {
     // `driftDatabase` from `package:drift_flutter` stores the database in
     // `getApplicationDocumentsDirectory()`.
     return driftDatabase(name: "new_database");
   }
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onUpgrade: (m, from, to) async {
+  // delete all tables and restart
+  for (var table in allTables) {
+    await m.deleteTable(table.actualTableName);
+    await m.createTable(table);
+  }
+},
+  );
 }

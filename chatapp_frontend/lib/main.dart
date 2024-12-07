@@ -17,6 +17,8 @@ import 'package:http/http.dart' as http;
 import 'pages/chatroom.dart';
 import 'pages/chats.dart';
 import 'pages/friends.dart';
+import 'package:drift/native.dart';
+import 'dart:io';
 
 // String token = "";      // TODO this is placeholder for now for a token that is somewhere stored persistently
 // String username = "";
@@ -26,12 +28,38 @@ Api restClient = DjangoRestApi();
 UserMemoryRepository userMemoryClient = UserMemoryRepoImplementation();
 // String baseURL = "baseURL";
 
-void main() {
+Future<File> getDatabasePath() async {
+  final directory = await getApplicationDocumentsDirectory();
+  return File('${directory.path}/');
+}
+
+Future<File> getSecondDatabasePath() async {
+  final directory = await getDatabasePath();
+  return File(directory.path);
+}
+
+Future<void> deleteDatabase() async {
+  final dbFile = await getDatabasePath();
+  if (await dbFile.exists()) {
+    await dbFile.delete();
+    print('Database deleted successfully.');
+  } else {
+    print('Database file does not exist.');
+  }
+}
+
+void main() async{
   //driftDatabase = AppDatabase();
   // WidgetsFlutterBinding.ensureInitialized();
 
+
   runApp(const MyApp(
   ));
+  print("\n\n\n");
+  print("DB path:");
+  print((await getSecondDatabasePath()).toString());
+  // await deleteDatabase();
+  print("\n\n\n");
   // print("\n\n\n");
   // print(await getApplicationDocumentsDirectory());
   // print("\n\n\n");

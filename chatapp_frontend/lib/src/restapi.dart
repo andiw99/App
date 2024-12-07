@@ -3,12 +3,13 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:chatapp_frontend/src/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
-
+import 'package:path_provider/path_provider.dart';
 
 
 abstract class Api {
@@ -22,6 +23,10 @@ abstract class Api {
   Future<Map<String, dynamic>> changeProfileInfo(String token, Map<String, dynamic> formData);
 
   Future<int> upload(String token, XFile imageFile);
+
+  Future<List<String>> getGalleryPictures(String token);
+
+  Future<int> downloadPicture(String token, String filename);
 }
 
 class DjangoRestApi extends Api {
@@ -76,6 +81,7 @@ class DjangoRestApi extends Api {
     return userInfoMap;
   }
 
+  @override
   Future<int> upload(String token, XFile imageFile) async {    
     var stream = http.ByteStream(imageFile.openRead());
     stream.cast();
@@ -93,4 +99,62 @@ class DjangoRestApi extends Api {
     print(response);
     return response.statusCode;
   }
+
+  @override
+  Future<List<String>> getGalleryPictures(String token) async {
+    List<String> pictures = [];
+    var retrieveURL = Uri.parse('$baseURL/$getImagesUrl/');
+    var userImagesInfo = jsonDecode((await client.get(retrieveURL,
+        headers: <String, String>{
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': 'Token $token'
+        },))
+    .body) as List<dynamic>;
+    for(var image in userImagesInfo) {      
+      pictures.add(image['image']);
+    }
+    return pictures;
+  }
+  
+  @override
+  Future<int> downloadPicture(String token, String filename) async {
+    try{
+      var retrieveURL = Uri.parse('$baseURL/$downloadImageUrl/?name=$filename');
+      final response = (await client.get(retrieveURL,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',  // do I need this line?
+          'Authorization': 'Token $token'
+          },
+      ));
+      if (response.statusCode == 200) {
+          // Parse the response
+          final Map<String, dynamic> data = json.decode(response.body);
+          // Decode base64 image
+          final String base64Image = data['image_data'];          
+          // Convert base64 to bytes
+          final Uint8List imageBytes = base64.decode(base64Image);
+    
+          Directory assetDirectory = await getAssetDirectory();
+          final File imageFile = File('${assetDirectory.path}$filename');
+          // Save the image
+          await imageFile.writeAsBytes(imageBytes);
+          print('Image saved: ${imageFile.path}');
+          return 1;
+        } else {
+          print('Failed to load image');
+          return response.statusCode;          
+        };
+    } catch (e) {
+      print(e);
+      return 0;
+  }
+  }
+}
+
+Future<Directory> getAssetDirectory() async {
+    final assetDirectory = Directory("${(await getApplicationDocumentsDirectory()).path}/$pictureBasePath");
+    if (!await assetDirectory.exists()) {
+      await assetDirectory.create(recursive: true);
+    }
+  return assetDirectory;
 }

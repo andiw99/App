@@ -6,6 +6,8 @@ const tokenAuthURL = "api-token-auth";
 const getUserInfoUrl = "get-user-info";
 const changeUserInfoUrl = "change-user-info";
 const uploadImageUrl = "upload-gallery-image";
+const getImagesUrl = "get-gallery-images";
+const downloadImageUrl = "download-image";
 
 // Strings
 const String editProfile = "Edit Profile";
@@ -43,3 +45,4 @@ const galleryImageWidth = 110.0;
 
 // Assets
 const String profilePicturePath = "assets/images/profile.jpeg";
+const String pictureBasePath = "assets/images/";

@@ -966,11 +966,11 @@ class FriendCompanion extends UpdateCompanion<FriendData> {
   }
 }
 
-class $PhotoTable extends Photo with TableInfo<$PhotoTable, PhotoData> {
+class $PictureTable extends Picture with TableInfo<$PictureTable, PictureData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $PhotoTable(this.attachedDatabase, [this._alias]);
+  $PictureTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -1000,9 +1000,9 @@ class $PhotoTable extends Photo with TableInfo<$PhotoTable, PhotoData> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'photo';
+  static const String $name = 'picture';
   @override
-  VerificationContext validateIntegrity(Insertable<PhotoData> instance,
+  VerificationContext validateIntegrity(Insertable<PictureData> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -1027,9 +1027,9 @@ class $PhotoTable extends Photo with TableInfo<$PhotoTable, PhotoData> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  PhotoData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  PictureData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return PhotoData(
+    return PictureData(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       profileId: attachedDatabase.typeMapping
@@ -1040,16 +1040,16 @@ class $PhotoTable extends Photo with TableInfo<$PhotoTable, PhotoData> {
   }
 
   @override
-  $PhotoTable createAlias(String alias) {
-    return $PhotoTable(attachedDatabase, alias);
+  $PictureTable createAlias(String alias) {
+    return $PictureTable(attachedDatabase, alias);
   }
 }
 
-class PhotoData extends DataClass implements Insertable<PhotoData> {
+class PictureData extends DataClass implements Insertable<PictureData> {
   final int id;
   final int profileId;
   final String photoPath;
-  const PhotoData(
+  const PictureData(
       {required this.id, required this.profileId, required this.photoPath});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1060,18 +1060,18 @@ class PhotoData extends DataClass implements Insertable<PhotoData> {
     return map;
   }
 
-  PhotoCompanion toCompanion(bool nullToAbsent) {
-    return PhotoCompanion(
+  PictureCompanion toCompanion(bool nullToAbsent) {
+    return PictureCompanion(
       id: Value(id),
       profileId: Value(profileId),
       photoPath: Value(photoPath),
     );
   }
 
-  factory PhotoData.fromJson(Map<String, dynamic> json,
+  factory PictureData.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return PhotoData(
+    return PictureData(
       id: serializer.fromJson<int>(json['id']),
       profileId: serializer.fromJson<int>(json['profileId']),
       photoPath: serializer.fromJson<String>(json['photoPath']),
@@ -1087,13 +1087,14 @@ class PhotoData extends DataClass implements Insertable<PhotoData> {
     };
   }
 
-  PhotoData copyWith({int? id, int? profileId, String? photoPath}) => PhotoData(
+  PictureData copyWith({int? id, int? profileId, String? photoPath}) =>
+      PictureData(
         id: id ?? this.id,
         profileId: profileId ?? this.profileId,
         photoPath: photoPath ?? this.photoPath,
       );
-  PhotoData copyWithCompanion(PhotoCompanion data) {
-    return PhotoData(
+  PictureData copyWithCompanion(PictureCompanion data) {
+    return PictureData(
       id: data.id.present ? data.id.value : this.id,
       profileId: data.profileId.present ? data.profileId.value : this.profileId,
       photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
@@ -1102,7 +1103,7 @@ class PhotoData extends DataClass implements Insertable<PhotoData> {
 
   @override
   String toString() {
-    return (StringBuffer('PhotoData(')
+    return (StringBuffer('PictureData(')
           ..write('id: $id, ')
           ..write('profileId: $profileId, ')
           ..write('photoPath: $photoPath')
@@ -1115,28 +1116,28 @@ class PhotoData extends DataClass implements Insertable<PhotoData> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is PhotoData &&
+      (other is PictureData &&
           other.id == this.id &&
           other.profileId == this.profileId &&
           other.photoPath == this.photoPath);
 }
 
-class PhotoCompanion extends UpdateCompanion<PhotoData> {
+class PictureCompanion extends UpdateCompanion<PictureData> {
   final Value<int> id;
   final Value<int> profileId;
   final Value<String> photoPath;
-  const PhotoCompanion({
+  const PictureCompanion({
     this.id = const Value.absent(),
     this.profileId = const Value.absent(),
     this.photoPath = const Value.absent(),
   });
-  PhotoCompanion.insert({
+  PictureCompanion.insert({
     this.id = const Value.absent(),
     required int profileId,
     required String photoPath,
   })  : profileId = Value(profileId),
         photoPath = Value(photoPath);
-  static Insertable<PhotoData> custom({
+  static Insertable<PictureData> custom({
     Expression<int>? id,
     Expression<int>? profileId,
     Expression<String>? photoPath,
@@ -1148,9 +1149,9 @@ class PhotoCompanion extends UpdateCompanion<PhotoData> {
     });
   }
 
-  PhotoCompanion copyWith(
+  PictureCompanion copyWith(
       {Value<int>? id, Value<int>? profileId, Value<String>? photoPath}) {
-    return PhotoCompanion(
+    return PictureCompanion(
       id: id ?? this.id,
       profileId: profileId ?? this.profileId,
       photoPath: photoPath ?? this.photoPath,
@@ -1174,7 +1175,447 @@ class PhotoCompanion extends UpdateCompanion<PhotoData> {
 
   @override
   String toString() {
-    return (StringBuffer('PhotoCompanion(')
+    return (StringBuffer('PictureCompanion(')
+          ..write('id: $id, ')
+          ..write('profileId: $profileId, ')
+          ..write('photoPath: $photoPath')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GalleryPictureTable extends GalleryPicture
+    with TableInfo<$GalleryPictureTable, GalleryPictureData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GalleryPictureTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _profileIdMeta =
+      const VerificationMeta('profileId');
+  @override
+  late final GeneratedColumn<int> profileId = GeneratedColumn<int>(
+      'profile_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints: 'REFERENCES person(id) NOT NULL');
+  static const VerificationMeta _photoPathMeta =
+      const VerificationMeta('photoPath');
+  @override
+  late final GeneratedColumn<String> photoPath = GeneratedColumn<String>(
+      'photo_path', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, profileId, photoPath];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'gallery_picture';
+  @override
+  VerificationContext validateIntegrity(Insertable<GalleryPictureData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('profile_id')) {
+      context.handle(_profileIdMeta,
+          profileId.isAcceptableOrUnknown(data['profile_id']!, _profileIdMeta));
+    } else if (isInserting) {
+      context.missing(_profileIdMeta);
+    }
+    if (data.containsKey('photo_path')) {
+      context.handle(_photoPathMeta,
+          photoPath.isAcceptableOrUnknown(data['photo_path']!, _photoPathMeta));
+    } else if (isInserting) {
+      context.missing(_photoPathMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  GalleryPictureData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GalleryPictureData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      profileId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}profile_id'])!,
+      photoPath: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}photo_path'])!,
+    );
+  }
+
+  @override
+  $GalleryPictureTable createAlias(String alias) {
+    return $GalleryPictureTable(attachedDatabase, alias);
+  }
+}
+
+class GalleryPictureData extends DataClass
+    implements Insertable<GalleryPictureData> {
+  final int id;
+  final int profileId;
+  final String photoPath;
+  const GalleryPictureData(
+      {required this.id, required this.profileId, required this.photoPath});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['profile_id'] = Variable<int>(profileId);
+    map['photo_path'] = Variable<String>(photoPath);
+    return map;
+  }
+
+  GalleryPictureCompanion toCompanion(bool nullToAbsent) {
+    return GalleryPictureCompanion(
+      id: Value(id),
+      profileId: Value(profileId),
+      photoPath: Value(photoPath),
+    );
+  }
+
+  factory GalleryPictureData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GalleryPictureData(
+      id: serializer.fromJson<int>(json['id']),
+      profileId: serializer.fromJson<int>(json['profileId']),
+      photoPath: serializer.fromJson<String>(json['photoPath']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'profileId': serializer.toJson<int>(profileId),
+      'photoPath': serializer.toJson<String>(photoPath),
+    };
+  }
+
+  GalleryPictureData copyWith({int? id, int? profileId, String? photoPath}) =>
+      GalleryPictureData(
+        id: id ?? this.id,
+        profileId: profileId ?? this.profileId,
+        photoPath: photoPath ?? this.photoPath,
+      );
+  GalleryPictureData copyWithCompanion(GalleryPictureCompanion data) {
+    return GalleryPictureData(
+      id: data.id.present ? data.id.value : this.id,
+      profileId: data.profileId.present ? data.profileId.value : this.profileId,
+      photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GalleryPictureData(')
+          ..write('id: $id, ')
+          ..write('profileId: $profileId, ')
+          ..write('photoPath: $photoPath')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, profileId, photoPath);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GalleryPictureData &&
+          other.id == this.id &&
+          other.profileId == this.profileId &&
+          other.photoPath == this.photoPath);
+}
+
+class GalleryPictureCompanion extends UpdateCompanion<GalleryPictureData> {
+  final Value<int> id;
+  final Value<int> profileId;
+  final Value<String> photoPath;
+  const GalleryPictureCompanion({
+    this.id = const Value.absent(),
+    this.profileId = const Value.absent(),
+    this.photoPath = const Value.absent(),
+  });
+  GalleryPictureCompanion.insert({
+    this.id = const Value.absent(),
+    required int profileId,
+    required String photoPath,
+  })  : profileId = Value(profileId),
+        photoPath = Value(photoPath);
+  static Insertable<GalleryPictureData> custom({
+    Expression<int>? id,
+    Expression<int>? profileId,
+    Expression<String>? photoPath,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (profileId != null) 'profile_id': profileId,
+      if (photoPath != null) 'photo_path': photoPath,
+    });
+  }
+
+  GalleryPictureCompanion copyWith(
+      {Value<int>? id, Value<int>? profileId, Value<String>? photoPath}) {
+    return GalleryPictureCompanion(
+      id: id ?? this.id,
+      profileId: profileId ?? this.profileId,
+      photoPath: photoPath ?? this.photoPath,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (profileId.present) {
+      map['profile_id'] = Variable<int>(profileId.value);
+    }
+    if (photoPath.present) {
+      map['photo_path'] = Variable<String>(photoPath.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GalleryPictureCompanion(')
+          ..write('id: $id, ')
+          ..write('profileId: $profileId, ')
+          ..write('photoPath: $photoPath')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ProfilePictureTable extends ProfilePicture
+    with TableInfo<$ProfilePictureTable, ProfilePictureData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProfilePictureTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _profileIdMeta =
+      const VerificationMeta('profileId');
+  @override
+  late final GeneratedColumn<int> profileId = GeneratedColumn<int>(
+      'profile_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints: 'REFERENCES person(id) NOT NULL');
+  static const VerificationMeta _photoPathMeta =
+      const VerificationMeta('photoPath');
+  @override
+  late final GeneratedColumn<String> photoPath = GeneratedColumn<String>(
+      'photo_path', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, profileId, photoPath];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'profile_picture';
+  @override
+  VerificationContext validateIntegrity(Insertable<ProfilePictureData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('profile_id')) {
+      context.handle(_profileIdMeta,
+          profileId.isAcceptableOrUnknown(data['profile_id']!, _profileIdMeta));
+    } else if (isInserting) {
+      context.missing(_profileIdMeta);
+    }
+    if (data.containsKey('photo_path')) {
+      context.handle(_photoPathMeta,
+          photoPath.isAcceptableOrUnknown(data['photo_path']!, _photoPathMeta));
+    } else if (isInserting) {
+      context.missing(_photoPathMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ProfilePictureData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProfilePictureData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      profileId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}profile_id'])!,
+      photoPath: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}photo_path'])!,
+    );
+  }
+
+  @override
+  $ProfilePictureTable createAlias(String alias) {
+    return $ProfilePictureTable(attachedDatabase, alias);
+  }
+}
+
+class ProfilePictureData extends DataClass
+    implements Insertable<ProfilePictureData> {
+  final int id;
+  final int profileId;
+  final String photoPath;
+  const ProfilePictureData(
+      {required this.id, required this.profileId, required this.photoPath});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['profile_id'] = Variable<int>(profileId);
+    map['photo_path'] = Variable<String>(photoPath);
+    return map;
+  }
+
+  ProfilePictureCompanion toCompanion(bool nullToAbsent) {
+    return ProfilePictureCompanion(
+      id: Value(id),
+      profileId: Value(profileId),
+      photoPath: Value(photoPath),
+    );
+  }
+
+  factory ProfilePictureData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ProfilePictureData(
+      id: serializer.fromJson<int>(json['id']),
+      profileId: serializer.fromJson<int>(json['profileId']),
+      photoPath: serializer.fromJson<String>(json['photoPath']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'profileId': serializer.toJson<int>(profileId),
+      'photoPath': serializer.toJson<String>(photoPath),
+    };
+  }
+
+  ProfilePictureData copyWith({int? id, int? profileId, String? photoPath}) =>
+      ProfilePictureData(
+        id: id ?? this.id,
+        profileId: profileId ?? this.profileId,
+        photoPath: photoPath ?? this.photoPath,
+      );
+  ProfilePictureData copyWithCompanion(ProfilePictureCompanion data) {
+    return ProfilePictureData(
+      id: data.id.present ? data.id.value : this.id,
+      profileId: data.profileId.present ? data.profileId.value : this.profileId,
+      photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProfilePictureData(')
+          ..write('id: $id, ')
+          ..write('profileId: $profileId, ')
+          ..write('photoPath: $photoPath')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, profileId, photoPath);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ProfilePictureData &&
+          other.id == this.id &&
+          other.profileId == this.profileId &&
+          other.photoPath == this.photoPath);
+}
+
+class ProfilePictureCompanion extends UpdateCompanion<ProfilePictureData> {
+  final Value<int> id;
+  final Value<int> profileId;
+  final Value<String> photoPath;
+  const ProfilePictureCompanion({
+    this.id = const Value.absent(),
+    this.profileId = const Value.absent(),
+    this.photoPath = const Value.absent(),
+  });
+  ProfilePictureCompanion.insert({
+    this.id = const Value.absent(),
+    required int profileId,
+    required String photoPath,
+  })  : profileId = Value(profileId),
+        photoPath = Value(photoPath);
+  static Insertable<ProfilePictureData> custom({
+    Expression<int>? id,
+    Expression<int>? profileId,
+    Expression<String>? photoPath,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (profileId != null) 'profile_id': profileId,
+      if (photoPath != null) 'photo_path': photoPath,
+    });
+  }
+
+  ProfilePictureCompanion copyWith(
+      {Value<int>? id, Value<int>? profileId, Value<String>? photoPath}) {
+    return ProfilePictureCompanion(
+      id: id ?? this.id,
+      profileId: profileId ?? this.profileId,
+      photoPath: photoPath ?? this.photoPath,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (profileId.present) {
+      map['profile_id'] = Variable<int>(profileId.value);
+    }
+    if (photoPath.present) {
+      map['photo_path'] = Variable<String>(photoPath.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProfilePictureCompanion(')
           ..write('id: $id, ')
           ..write('profileId: $profileId, ')
           ..write('photoPath: $photoPath')
@@ -1189,13 +1630,15 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $PersonTable person = $PersonTable(this);
   late final $ProfileTable profile = $ProfileTable(this);
   late final $FriendTable friend = $FriendTable(this);
-  late final $PhotoTable photo = $PhotoTable(this);
+  late final $PictureTable picture = $PictureTable(this);
+  late final $GalleryPictureTable galleryPicture = $GalleryPictureTable(this);
+  late final $ProfilePictureTable profilePicture = $ProfilePictureTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [person, profile, friend, photo];
+      [person, profile, friend, picture, galleryPicture, profilePicture];
 }
 
 typedef $$PersonTableCreateCompanionBuilder = PersonCompanion Function({
@@ -1211,60 +1654,223 @@ final class $$PersonTableReferences
     extends BaseReferences<_$AppDatabase, $PersonTable, PersonData> {
   $$PersonTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static MultiTypedResultKey<$PhotoTable, List<PhotoData>> _photoRefsTable(
-          _$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(db.photo,
-          aliasName: $_aliasNameGenerator(db.person.id, db.photo.profileId));
+  static MultiTypedResultKey<$PictureTable, List<PictureData>>
+      _pictureRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+          db.picture,
+          aliasName: $_aliasNameGenerator(db.person.id, db.picture.profileId));
 
-  $$PhotoTableProcessedTableManager get photoRefs {
-    final manager = $$PhotoTableTableManager($_db, $_db.photo)
+  $$PictureTableProcessedTableManager get pictureRefs {
+    final manager = $$PictureTableTableManager($_db, $_db.picture)
         .filter((f) => f.profileId.id($_item.id));
 
-    final cache = $_typedResult.readTableOrNull(_photoRefsTable($_db));
+    final cache = $_typedResult.readTableOrNull(_pictureRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$GalleryPictureTable, List<GalleryPictureData>>
+      _galleryPictureRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.galleryPicture,
+              aliasName: $_aliasNameGenerator(
+                  db.person.id, db.galleryPicture.profileId));
+
+  $$GalleryPictureTableProcessedTableManager get galleryPictureRefs {
+    final manager = $$GalleryPictureTableTableManager($_db, $_db.galleryPicture)
+        .filter((f) => f.profileId.id($_item.id));
+
+    final cache = $_typedResult.readTableOrNull(_galleryPictureRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$ProfilePictureTable, List<ProfilePictureData>>
+      _profilePictureRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.profilePicture,
+              aliasName: $_aliasNameGenerator(
+                  db.person.id, db.profilePicture.profileId));
+
+  $$ProfilePictureTableProcessedTableManager get profilePictureRefs {
+    final manager = $$ProfilePictureTableTableManager($_db, $_db.profilePicture)
+        .filter((f) => f.profileId.id($_item.id));
+
+    final cache = $_typedResult.readTableOrNull(_profilePictureRefsTable($_db));
     return ProcessedTableManager(
         manager.$state.copyWith(prefetchedData: cache));
   }
 }
 
 class $$PersonTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $PersonTable> {
-  $$PersonTableFilterComposer(super.$state);
-  ColumnFilters<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+    extends Composer<_$AppDatabase, $PersonTable> {
+  $$PersonTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get username => $state.composableBuilder(
-      column: $state.table.username,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<String> get username => $composableBuilder(
+      column: $table.username, builder: (column) => ColumnFilters(column));
 
-  ComposableFilter photoRefs(
-      ComposableFilter Function($$PhotoTableFilterComposer f) f) {
-    final $$PhotoTableFilterComposer composer = $state.composerBuilder(
+  Expression<bool> pictureRefs(
+      Expression<bool> Function($$PictureTableFilterComposer f) f) {
+    final $$PictureTableFilterComposer composer = $composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.id,
-        referencedTable: $state.db.photo,
+        referencedTable: $db.picture,
         getReferencedColumn: (t) => t.profileId,
-        builder: (joinBuilder, parentComposers) => $$PhotoTableFilterComposer(
-            ComposerState(
-                $state.db, $state.db.photo, joinBuilder, parentComposers)));
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PictureTableFilterComposer(
+              $db: $db,
+              $table: $db.picture,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<bool> galleryPictureRefs(
+      Expression<bool> Function($$GalleryPictureTableFilterComposer f) f) {
+    final $$GalleryPictureTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.galleryPicture,
+        getReferencedColumn: (t) => t.profileId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$GalleryPictureTableFilterComposer(
+              $db: $db,
+              $table: $db.galleryPicture,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<bool> profilePictureRefs(
+      Expression<bool> Function($$ProfilePictureTableFilterComposer f) f) {
+    final $$ProfilePictureTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.profilePicture,
+        getReferencedColumn: (t) => t.profileId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ProfilePictureTableFilterComposer(
+              $db: $db,
+              $table: $db.profilePicture,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
     return f(composer);
   }
 }
 
 class $$PersonTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $PersonTable> {
-  $$PersonTableOrderingComposer(super.$state);
-  ColumnOrderings<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+    extends Composer<_$AppDatabase, $PersonTable> {
+  $$PersonTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get username => $state.composableBuilder(
-      column: $state.table.username,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<String> get username => $composableBuilder(
+      column: $table.username, builder: (column) => ColumnOrderings(column));
+}
+
+class $$PersonTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PersonTable> {
+  $$PersonTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get username =>
+      $composableBuilder(column: $table.username, builder: (column) => column);
+
+  Expression<T> pictureRefs<T extends Object>(
+      Expression<T> Function($$PictureTableAnnotationComposer a) f) {
+    final $$PictureTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.picture,
+        getReferencedColumn: (t) => t.profileId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PictureTableAnnotationComposer(
+              $db: $db,
+              $table: $db.picture,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<T> galleryPictureRefs<T extends Object>(
+      Expression<T> Function($$GalleryPictureTableAnnotationComposer a) f) {
+    final $$GalleryPictureTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.galleryPicture,
+        getReferencedColumn: (t) => t.profileId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$GalleryPictureTableAnnotationComposer(
+              $db: $db,
+              $table: $db.galleryPicture,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<T> profilePictureRefs<T extends Object>(
+      Expression<T> Function($$ProfilePictureTableAnnotationComposer a) f) {
+    final $$ProfilePictureTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.profilePicture,
+        getReferencedColumn: (t) => t.profileId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ProfilePictureTableAnnotationComposer(
+              $db: $db,
+              $table: $db.profilePicture,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
 }
 
 class $$PersonTableTableManager extends RootTableManager<
@@ -1273,19 +1879,23 @@ class $$PersonTableTableManager extends RootTableManager<
     PersonData,
     $$PersonTableFilterComposer,
     $$PersonTableOrderingComposer,
+    $$PersonTableAnnotationComposer,
     $$PersonTableCreateCompanionBuilder,
     $$PersonTableUpdateCompanionBuilder,
     (PersonData, $$PersonTableReferences),
     PersonData,
-    PrefetchHooks Function({bool photoRefs})> {
+    PrefetchHooks Function(
+        {bool pictureRefs, bool galleryPictureRefs, bool profilePictureRefs})> {
   $$PersonTableTableManager(_$AppDatabase db, $PersonTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$PersonTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$PersonTableOrderingComposer(ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$PersonTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PersonTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PersonTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> username = const Value.absent(),
@@ -1306,20 +1916,51 @@ class $$PersonTableTableManager extends RootTableManager<
               .map((e) =>
                   (e.readTable(table), $$PersonTableReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({photoRefs = false}) {
+          prefetchHooksCallback: (
+              {pictureRefs = false,
+              galleryPictureRefs = false,
+              profilePictureRefs = false}) {
             return PrefetchHooks(
               db: db,
-              explicitlyWatchedTables: [if (photoRefs) db.photo],
+              explicitlyWatchedTables: [
+                if (pictureRefs) db.picture,
+                if (galleryPictureRefs) db.galleryPicture,
+                if (profilePictureRefs) db.profilePicture
+              ],
               addJoins: null,
               getPrefetchedDataCallback: (items) async {
                 return [
-                  if (photoRefs)
+                  if (pictureRefs)
                     await $_getPrefetchedData(
                         currentTable: table,
                         referencedTable:
-                            $$PersonTableReferences._photoRefsTable(db),
+                            $$PersonTableReferences._pictureRefsTable(db),
                         managerFromTypedResult: (p0) =>
-                            $$PersonTableReferences(db, table, p0).photoRefs,
+                            $$PersonTableReferences(db, table, p0).pictureRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.profileId == item.id),
+                        typedResults: items),
+                  if (galleryPictureRefs)
+                    await $_getPrefetchedData(
+                        currentTable: table,
+                        referencedTable: $$PersonTableReferences
+                            ._galleryPictureRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$PersonTableReferences(db, table, p0)
+                                .galleryPictureRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.profileId == item.id),
+                        typedResults: items),
+                  if (profilePictureRefs)
+                    await $_getPrefetchedData(
+                        currentTable: table,
+                        referencedTable: $$PersonTableReferences
+                            ._profilePictureRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$PersonTableReferences(db, table, p0)
+                                .profilePictureRefs,
                         referencedItemsForCurrentItem:
                             (item, referencedItems) => referencedItems
                                 .where((e) => e.profileId == item.id),
@@ -1337,11 +1978,13 @@ typedef $$PersonTableProcessedTableManager = ProcessedTableManager<
     PersonData,
     $$PersonTableFilterComposer,
     $$PersonTableOrderingComposer,
+    $$PersonTableAnnotationComposer,
     $$PersonTableCreateCompanionBuilder,
     $$PersonTableUpdateCompanionBuilder,
     (PersonData, $$PersonTableReferences),
     PersonData,
-    PrefetchHooks Function({bool photoRefs})>;
+    PrefetchHooks Function(
+        {bool pictureRefs, bool galleryPictureRefs, bool profilePictureRefs})>;
 typedef $$ProfileTableCreateCompanionBuilder = ProfileCompanion Function({
   Value<int> id,
   required String username,
@@ -1383,104 +2026,147 @@ final class $$ProfileTableReferences
 }
 
 class $$ProfileTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $ProfileTable> {
-  $$ProfileTableFilterComposer(super.$state);
-  ColumnFilters<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+    extends Composer<_$AppDatabase, $ProfileTable> {
+  $$ProfileTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get username => $state.composableBuilder(
-      column: $state.table.username,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<String> get username => $composableBuilder(
+      column: $table.username, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get firstName => $state.composableBuilder(
-      column: $state.table.firstName,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<String> get firstName => $composableBuilder(
+      column: $table.firstName, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get lastName => $state.composableBuilder(
-      column: $state.table.lastName,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<String> get lastName => $composableBuilder(
+      column: $table.lastName, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get bio => $state.composableBuilder(
-      column: $state.table.bio,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<String> get bio => $composableBuilder(
+      column: $table.bio, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get email => $state.composableBuilder(
-      column: $state.table.email,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<String> get email => $composableBuilder(
+      column: $table.email, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get phoneNumber => $state.composableBuilder(
-      column: $state.table.phoneNumber,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<String> get phoneNumber => $composableBuilder(
+      column: $table.phoneNumber, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get token => $state.composableBuilder(
-      column: $state.table.token,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<String> get token => $composableBuilder(
+      column: $table.token, builder: (column) => ColumnFilters(column));
 
-  ComposableFilter friendRefs(
-      ComposableFilter Function($$FriendTableFilterComposer f) f) {
-    final $$FriendTableFilterComposer composer = $state.composerBuilder(
+  Expression<bool> friendRefs(
+      Expression<bool> Function($$FriendTableFilterComposer f) f) {
+    final $$FriendTableFilterComposer composer = $composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.id,
-        referencedTable: $state.db.friend,
+        referencedTable: $db.friend,
         getReferencedColumn: (t) => t.profileId,
-        builder: (joinBuilder, parentComposers) => $$FriendTableFilterComposer(
-            ComposerState(
-                $state.db, $state.db.friend, joinBuilder, parentComposers)));
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$FriendTableFilterComposer(
+              $db: $db,
+              $table: $db.friend,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
     return f(composer);
   }
 }
 
 class $$ProfileTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $ProfileTable> {
-  $$ProfileTableOrderingComposer(super.$state);
-  ColumnOrderings<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+    extends Composer<_$AppDatabase, $ProfileTable> {
+  $$ProfileTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get username => $state.composableBuilder(
-      column: $state.table.username,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<String> get username => $composableBuilder(
+      column: $table.username, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get firstName => $state.composableBuilder(
-      column: $state.table.firstName,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<String> get firstName => $composableBuilder(
+      column: $table.firstName, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get lastName => $state.composableBuilder(
-      column: $state.table.lastName,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<String> get lastName => $composableBuilder(
+      column: $table.lastName, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get bio => $state.composableBuilder(
-      column: $state.table.bio,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<String> get bio => $composableBuilder(
+      column: $table.bio, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get email => $state.composableBuilder(
-      column: $state.table.email,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<String> get email => $composableBuilder(
+      column: $table.email, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get phoneNumber => $state.composableBuilder(
-      column: $state.table.phoneNumber,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<String> get phoneNumber => $composableBuilder(
+      column: $table.phoneNumber, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get token => $state.composableBuilder(
-      column: $state.table.token,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<String> get token => $composableBuilder(
+      column: $table.token, builder: (column) => ColumnOrderings(column));
+}
+
+class $$ProfileTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ProfileTable> {
+  $$ProfileTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get username =>
+      $composableBuilder(column: $table.username, builder: (column) => column);
+
+  GeneratedColumn<String> get firstName =>
+      $composableBuilder(column: $table.firstName, builder: (column) => column);
+
+  GeneratedColumn<String> get lastName =>
+      $composableBuilder(column: $table.lastName, builder: (column) => column);
+
+  GeneratedColumn<String> get bio =>
+      $composableBuilder(column: $table.bio, builder: (column) => column);
+
+  GeneratedColumn<String> get email =>
+      $composableBuilder(column: $table.email, builder: (column) => column);
+
+  GeneratedColumn<String> get phoneNumber => $composableBuilder(
+      column: $table.phoneNumber, builder: (column) => column);
+
+  GeneratedColumn<String> get token =>
+      $composableBuilder(column: $table.token, builder: (column) => column);
+
+  Expression<T> friendRefs<T extends Object>(
+      Expression<T> Function($$FriendTableAnnotationComposer a) f) {
+    final $$FriendTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.friend,
+        getReferencedColumn: (t) => t.profileId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$FriendTableAnnotationComposer(
+              $db: $db,
+              $table: $db.friend,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
 }
 
 class $$ProfileTableTableManager extends RootTableManager<
@@ -1489,6 +2175,7 @@ class $$ProfileTableTableManager extends RootTableManager<
     ProfileData,
     $$ProfileTableFilterComposer,
     $$ProfileTableOrderingComposer,
+    $$ProfileTableAnnotationComposer,
     $$ProfileTableCreateCompanionBuilder,
     $$ProfileTableUpdateCompanionBuilder,
     (ProfileData, $$ProfileTableReferences),
@@ -1498,10 +2185,12 @@ class $$ProfileTableTableManager extends RootTableManager<
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$ProfileTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$ProfileTableOrderingComposer(ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$ProfileTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ProfileTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ProfileTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> username = const Value.absent(),
@@ -1577,6 +2266,7 @@ typedef $$ProfileTableProcessedTableManager = ProcessedTableManager<
     ProfileData,
     $$ProfileTableFilterComposer,
     $$ProfileTableOrderingComposer,
+    $$ProfileTableAnnotationComposer,
     $$ProfileTableCreateCompanionBuilder,
     $$ProfileTableUpdateCompanionBuilder,
     (ProfileData, $$ProfileTableReferences),
@@ -1618,83 +2308,136 @@ final class $$FriendTableReferences
 }
 
 class $$FriendTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $FriendTable> {
-  $$FriendTableFilterComposer(super.$state);
-  ColumnFilters<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+    extends Composer<_$AppDatabase, $FriendTable> {
+  $$FriendTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get username => $state.composableBuilder(
-      column: $state.table.username,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<String> get username => $composableBuilder(
+      column: $table.username, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get firstName => $state.composableBuilder(
-      column: $state.table.firstName,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<String> get firstName => $composableBuilder(
+      column: $table.firstName, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get lastName => $state.composableBuilder(
-      column: $state.table.lastName,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<String> get lastName => $composableBuilder(
+      column: $table.lastName, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get bio => $state.composableBuilder(
-      column: $state.table.bio,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<String> get bio => $composableBuilder(
+      column: $table.bio, builder: (column) => ColumnFilters(column));
 
   $$ProfileTableFilterComposer get profileId {
-    final $$ProfileTableFilterComposer composer = $state.composerBuilder(
+    final $$ProfileTableFilterComposer composer = $composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.profileId,
-        referencedTable: $state.db.profile,
+        referencedTable: $db.profile,
         getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) => $$ProfileTableFilterComposer(
-            ComposerState(
-                $state.db, $state.db.profile, joinBuilder, parentComposers)));
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ProfileTableFilterComposer(
+              $db: $db,
+              $table: $db.profile,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
     return composer;
   }
 }
 
 class $$FriendTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $FriendTable> {
-  $$FriendTableOrderingComposer(super.$state);
-  ColumnOrderings<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+    extends Composer<_$AppDatabase, $FriendTable> {
+  $$FriendTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get username => $state.composableBuilder(
-      column: $state.table.username,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<String> get username => $composableBuilder(
+      column: $table.username, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get firstName => $state.composableBuilder(
-      column: $state.table.firstName,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<String> get firstName => $composableBuilder(
+      column: $table.firstName, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get lastName => $state.composableBuilder(
-      column: $state.table.lastName,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<String> get lastName => $composableBuilder(
+      column: $table.lastName, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get bio => $state.composableBuilder(
-      column: $state.table.bio,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<String> get bio => $composableBuilder(
+      column: $table.bio, builder: (column) => ColumnOrderings(column));
 
   $$ProfileTableOrderingComposer get profileId {
-    final $$ProfileTableOrderingComposer composer = $state.composerBuilder(
+    final $$ProfileTableOrderingComposer composer = $composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.profileId,
-        referencedTable: $state.db.profile,
+        referencedTable: $db.profile,
         getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) =>
-            $$ProfileTableOrderingComposer(ComposerState(
-                $state.db, $state.db.profile, joinBuilder, parentComposers)));
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ProfileTableOrderingComposer(
+              $db: $db,
+              $table: $db.profile,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$FriendTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FriendTable> {
+  $$FriendTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get username =>
+      $composableBuilder(column: $table.username, builder: (column) => column);
+
+  GeneratedColumn<String> get firstName =>
+      $composableBuilder(column: $table.firstName, builder: (column) => column);
+
+  GeneratedColumn<String> get lastName =>
+      $composableBuilder(column: $table.lastName, builder: (column) => column);
+
+  GeneratedColumn<String> get bio =>
+      $composableBuilder(column: $table.bio, builder: (column) => column);
+
+  $$ProfileTableAnnotationComposer get profileId {
+    final $$ProfileTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.profileId,
+        referencedTable: $db.profile,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ProfileTableAnnotationComposer(
+              $db: $db,
+              $table: $db.profile,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
     return composer;
   }
 }
@@ -1705,6 +2448,7 @@ class $$FriendTableTableManager extends RootTableManager<
     FriendData,
     $$FriendTableFilterComposer,
     $$FriendTableOrderingComposer,
+    $$FriendTableAnnotationComposer,
     $$FriendTableCreateCompanionBuilder,
     $$FriendTableUpdateCompanionBuilder,
     (FriendData, $$FriendTableReferences),
@@ -1714,10 +2458,12 @@ class $$FriendTableTableManager extends RootTableManager<
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$FriendTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$FriendTableOrderingComposer(ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$FriendTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FriendTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FriendTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> username = const Value.absent(),
@@ -1769,6 +2515,7 @@ class $$FriendTableTableManager extends RootTableManager<
                       dynamic,
                       dynamic,
                       dynamic,
+                      dynamic,
                       dynamic>>(state) {
                 if (profileId) {
                   state = state.withJoin(
@@ -1797,28 +2544,29 @@ typedef $$FriendTableProcessedTableManager = ProcessedTableManager<
     FriendData,
     $$FriendTableFilterComposer,
     $$FriendTableOrderingComposer,
+    $$FriendTableAnnotationComposer,
     $$FriendTableCreateCompanionBuilder,
     $$FriendTableUpdateCompanionBuilder,
     (FriendData, $$FriendTableReferences),
     FriendData,
     PrefetchHooks Function({bool profileId})>;
-typedef $$PhotoTableCreateCompanionBuilder = PhotoCompanion Function({
+typedef $$PictureTableCreateCompanionBuilder = PictureCompanion Function({
   Value<int> id,
   required int profileId,
   required String photoPath,
 });
-typedef $$PhotoTableUpdateCompanionBuilder = PhotoCompanion Function({
+typedef $$PictureTableUpdateCompanionBuilder = PictureCompanion Function({
   Value<int> id,
   Value<int> profileId,
   Value<String> photoPath,
 });
 
-final class $$PhotoTableReferences
-    extends BaseReferences<_$AppDatabase, $PhotoTable, PhotoData> {
-  $$PhotoTableReferences(super.$_db, super.$_table, super.$_typedResult);
+final class $$PictureTableReferences
+    extends BaseReferences<_$AppDatabase, $PictureTable, PictureData> {
+  $$PictureTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $PersonTable _profileIdTable(_$AppDatabase db) => db.person
-      .createAlias($_aliasNameGenerator(db.photo.profileId, db.person.id));
+      .createAlias($_aliasNameGenerator(db.picture.profileId, db.person.id));
 
   $$PersonTableProcessedTableManager? get profileId {
     if ($_item.profileId == null) return null;
@@ -1831,83 +2579,142 @@ final class $$PhotoTableReferences
   }
 }
 
-class $$PhotoTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $PhotoTable> {
-  $$PhotoTableFilterComposer(super.$state);
-  ColumnFilters<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+class $$PictureTableFilterComposer
+    extends Composer<_$AppDatabase, $PictureTable> {
+  $$PictureTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get photoPath => $state.composableBuilder(
-      column: $state.table.photoPath,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
+  ColumnFilters<String> get photoPath => $composableBuilder(
+      column: $table.photoPath, builder: (column) => ColumnFilters(column));
 
   $$PersonTableFilterComposer get profileId {
-    final $$PersonTableFilterComposer composer = $state.composerBuilder(
+    final $$PersonTableFilterComposer composer = $composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.profileId,
-        referencedTable: $state.db.person,
+        referencedTable: $db.person,
         getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) => $$PersonTableFilterComposer(
-            ComposerState(
-                $state.db, $state.db.person, joinBuilder, parentComposers)));
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PersonTableFilterComposer(
+              $db: $db,
+              $table: $db.person,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
     return composer;
   }
 }
 
-class $$PhotoTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $PhotoTable> {
-  $$PhotoTableOrderingComposer(super.$state);
-  ColumnOrderings<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+class $$PictureTableOrderingComposer
+    extends Composer<_$AppDatabase, $PictureTable> {
+  $$PictureTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get photoPath => $state.composableBuilder(
-      column: $state.table.photoPath,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+  ColumnOrderings<String> get photoPath => $composableBuilder(
+      column: $table.photoPath, builder: (column) => ColumnOrderings(column));
 
   $$PersonTableOrderingComposer get profileId {
-    final $$PersonTableOrderingComposer composer = $state.composerBuilder(
+    final $$PersonTableOrderingComposer composer = $composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.profileId,
-        referencedTable: $state.db.person,
+        referencedTable: $db.person,
         getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) =>
-            $$PersonTableOrderingComposer(ComposerState(
-                $state.db, $state.db.person, joinBuilder, parentComposers)));
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PersonTableOrderingComposer(
+              $db: $db,
+              $table: $db.person,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
     return composer;
   }
 }
 
-class $$PhotoTableTableManager extends RootTableManager<
+class $$PictureTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PictureTable> {
+  $$PictureTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get photoPath =>
+      $composableBuilder(column: $table.photoPath, builder: (column) => column);
+
+  $$PersonTableAnnotationComposer get profileId {
+    final $$PersonTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.profileId,
+        referencedTable: $db.person,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PersonTableAnnotationComposer(
+              $db: $db,
+              $table: $db.person,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$PictureTableTableManager extends RootTableManager<
     _$AppDatabase,
-    $PhotoTable,
-    PhotoData,
-    $$PhotoTableFilterComposer,
-    $$PhotoTableOrderingComposer,
-    $$PhotoTableCreateCompanionBuilder,
-    $$PhotoTableUpdateCompanionBuilder,
-    (PhotoData, $$PhotoTableReferences),
-    PhotoData,
+    $PictureTable,
+    PictureData,
+    $$PictureTableFilterComposer,
+    $$PictureTableOrderingComposer,
+    $$PictureTableAnnotationComposer,
+    $$PictureTableCreateCompanionBuilder,
+    $$PictureTableUpdateCompanionBuilder,
+    (PictureData, $$PictureTableReferences),
+    PictureData,
     PrefetchHooks Function({bool profileId})> {
-  $$PhotoTableTableManager(_$AppDatabase db, $PhotoTable table)
+  $$PictureTableTableManager(_$AppDatabase db, $PictureTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$PhotoTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$PhotoTableOrderingComposer(ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$PictureTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PictureTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PictureTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<int> profileId = const Value.absent(),
             Value<String> photoPath = const Value.absent(),
           }) =>
-              PhotoCompanion(
+              PictureCompanion(
             id: id,
             profileId: profileId,
             photoPath: photoPath,
@@ -1917,14 +2724,14 @@ class $$PhotoTableTableManager extends RootTableManager<
             required int profileId,
             required String photoPath,
           }) =>
-              PhotoCompanion.insert(
+              PictureCompanion.insert(
             id: id,
             profileId: profileId,
             photoPath: photoPath,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) =>
-                  (e.readTable(table), $$PhotoTableReferences(db, table, e)))
+                  (e.readTable(table), $$PictureTableReferences(db, table, e)))
               .toList(),
           prefetchHooksCallback: ({profileId = false}) {
             return PrefetchHooks(
@@ -1941,14 +2748,16 @@ class $$PhotoTableTableManager extends RootTableManager<
                       dynamic,
                       dynamic,
                       dynamic,
+                      dynamic,
                       dynamic>>(state) {
                 if (profileId) {
                   state = state.withJoin(
                     currentTable: table,
                     currentColumn: table.profileId,
-                    referencedTable: $$PhotoTableReferences._profileIdTable(db),
+                    referencedTable:
+                        $$PictureTableReferences._profileIdTable(db),
                     referencedColumn:
-                        $$PhotoTableReferences._profileIdTable(db).id,
+                        $$PictureTableReferences._profileIdTable(db).id,
                   ) as T;
                 }
 
@@ -1962,16 +2771,497 @@ class $$PhotoTableTableManager extends RootTableManager<
         ));
 }
 
-typedef $$PhotoTableProcessedTableManager = ProcessedTableManager<
+typedef $$PictureTableProcessedTableManager = ProcessedTableManager<
     _$AppDatabase,
-    $PhotoTable,
-    PhotoData,
-    $$PhotoTableFilterComposer,
-    $$PhotoTableOrderingComposer,
-    $$PhotoTableCreateCompanionBuilder,
-    $$PhotoTableUpdateCompanionBuilder,
-    (PhotoData, $$PhotoTableReferences),
-    PhotoData,
+    $PictureTable,
+    PictureData,
+    $$PictureTableFilterComposer,
+    $$PictureTableOrderingComposer,
+    $$PictureTableAnnotationComposer,
+    $$PictureTableCreateCompanionBuilder,
+    $$PictureTableUpdateCompanionBuilder,
+    (PictureData, $$PictureTableReferences),
+    PictureData,
+    PrefetchHooks Function({bool profileId})>;
+typedef $$GalleryPictureTableCreateCompanionBuilder = GalleryPictureCompanion
+    Function({
+  Value<int> id,
+  required int profileId,
+  required String photoPath,
+});
+typedef $$GalleryPictureTableUpdateCompanionBuilder = GalleryPictureCompanion
+    Function({
+  Value<int> id,
+  Value<int> profileId,
+  Value<String> photoPath,
+});
+
+final class $$GalleryPictureTableReferences extends BaseReferences<
+    _$AppDatabase, $GalleryPictureTable, GalleryPictureData> {
+  $$GalleryPictureTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $PersonTable _profileIdTable(_$AppDatabase db) =>
+      db.person.createAlias(
+          $_aliasNameGenerator(db.galleryPicture.profileId, db.person.id));
+
+  $$PersonTableProcessedTableManager? get profileId {
+    if ($_item.profileId == null) return null;
+    final manager = $$PersonTableTableManager($_db, $_db.person)
+        .filter((f) => f.id($_item.profileId!));
+    final item = $_typedResult.readTableOrNull(_profileIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$GalleryPictureTableFilterComposer
+    extends Composer<_$AppDatabase, $GalleryPictureTable> {
+  $$GalleryPictureTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get photoPath => $composableBuilder(
+      column: $table.photoPath, builder: (column) => ColumnFilters(column));
+
+  $$PersonTableFilterComposer get profileId {
+    final $$PersonTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.profileId,
+        referencedTable: $db.person,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PersonTableFilterComposer(
+              $db: $db,
+              $table: $db.person,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$GalleryPictureTableOrderingComposer
+    extends Composer<_$AppDatabase, $GalleryPictureTable> {
+  $$GalleryPictureTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get photoPath => $composableBuilder(
+      column: $table.photoPath, builder: (column) => ColumnOrderings(column));
+
+  $$PersonTableOrderingComposer get profileId {
+    final $$PersonTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.profileId,
+        referencedTable: $db.person,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PersonTableOrderingComposer(
+              $db: $db,
+              $table: $db.person,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$GalleryPictureTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GalleryPictureTable> {
+  $$GalleryPictureTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get photoPath =>
+      $composableBuilder(column: $table.photoPath, builder: (column) => column);
+
+  $$PersonTableAnnotationComposer get profileId {
+    final $$PersonTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.profileId,
+        referencedTable: $db.person,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PersonTableAnnotationComposer(
+              $db: $db,
+              $table: $db.person,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$GalleryPictureTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $GalleryPictureTable,
+    GalleryPictureData,
+    $$GalleryPictureTableFilterComposer,
+    $$GalleryPictureTableOrderingComposer,
+    $$GalleryPictureTableAnnotationComposer,
+    $$GalleryPictureTableCreateCompanionBuilder,
+    $$GalleryPictureTableUpdateCompanionBuilder,
+    (GalleryPictureData, $$GalleryPictureTableReferences),
+    GalleryPictureData,
+    PrefetchHooks Function({bool profileId})> {
+  $$GalleryPictureTableTableManager(
+      _$AppDatabase db, $GalleryPictureTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GalleryPictureTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GalleryPictureTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GalleryPictureTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> profileId = const Value.absent(),
+            Value<String> photoPath = const Value.absent(),
+          }) =>
+              GalleryPictureCompanion(
+            id: id,
+            profileId: profileId,
+            photoPath: photoPath,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int profileId,
+            required String photoPath,
+          }) =>
+              GalleryPictureCompanion.insert(
+            id: id,
+            profileId: profileId,
+            photoPath: photoPath,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$GalleryPictureTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({profileId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (profileId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.profileId,
+                    referencedTable:
+                        $$GalleryPictureTableReferences._profileIdTable(db),
+                    referencedColumn:
+                        $$GalleryPictureTableReferences._profileIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$GalleryPictureTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $GalleryPictureTable,
+    GalleryPictureData,
+    $$GalleryPictureTableFilterComposer,
+    $$GalleryPictureTableOrderingComposer,
+    $$GalleryPictureTableAnnotationComposer,
+    $$GalleryPictureTableCreateCompanionBuilder,
+    $$GalleryPictureTableUpdateCompanionBuilder,
+    (GalleryPictureData, $$GalleryPictureTableReferences),
+    GalleryPictureData,
+    PrefetchHooks Function({bool profileId})>;
+typedef $$ProfilePictureTableCreateCompanionBuilder = ProfilePictureCompanion
+    Function({
+  Value<int> id,
+  required int profileId,
+  required String photoPath,
+});
+typedef $$ProfilePictureTableUpdateCompanionBuilder = ProfilePictureCompanion
+    Function({
+  Value<int> id,
+  Value<int> profileId,
+  Value<String> photoPath,
+});
+
+final class $$ProfilePictureTableReferences extends BaseReferences<
+    _$AppDatabase, $ProfilePictureTable, ProfilePictureData> {
+  $$ProfilePictureTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $PersonTable _profileIdTable(_$AppDatabase db) =>
+      db.person.createAlias(
+          $_aliasNameGenerator(db.profilePicture.profileId, db.person.id));
+
+  $$PersonTableProcessedTableManager? get profileId {
+    if ($_item.profileId == null) return null;
+    final manager = $$PersonTableTableManager($_db, $_db.person)
+        .filter((f) => f.id($_item.profileId!));
+    final item = $_typedResult.readTableOrNull(_profileIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$ProfilePictureTableFilterComposer
+    extends Composer<_$AppDatabase, $ProfilePictureTable> {
+  $$ProfilePictureTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get photoPath => $composableBuilder(
+      column: $table.photoPath, builder: (column) => ColumnFilters(column));
+
+  $$PersonTableFilterComposer get profileId {
+    final $$PersonTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.profileId,
+        referencedTable: $db.person,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PersonTableFilterComposer(
+              $db: $db,
+              $table: $db.person,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$ProfilePictureTableOrderingComposer
+    extends Composer<_$AppDatabase, $ProfilePictureTable> {
+  $$ProfilePictureTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get photoPath => $composableBuilder(
+      column: $table.photoPath, builder: (column) => ColumnOrderings(column));
+
+  $$PersonTableOrderingComposer get profileId {
+    final $$PersonTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.profileId,
+        referencedTable: $db.person,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PersonTableOrderingComposer(
+              $db: $db,
+              $table: $db.person,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$ProfilePictureTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ProfilePictureTable> {
+  $$ProfilePictureTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get photoPath =>
+      $composableBuilder(column: $table.photoPath, builder: (column) => column);
+
+  $$PersonTableAnnotationComposer get profileId {
+    final $$PersonTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.profileId,
+        referencedTable: $db.person,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$PersonTableAnnotationComposer(
+              $db: $db,
+              $table: $db.person,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$ProfilePictureTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $ProfilePictureTable,
+    ProfilePictureData,
+    $$ProfilePictureTableFilterComposer,
+    $$ProfilePictureTableOrderingComposer,
+    $$ProfilePictureTableAnnotationComposer,
+    $$ProfilePictureTableCreateCompanionBuilder,
+    $$ProfilePictureTableUpdateCompanionBuilder,
+    (ProfilePictureData, $$ProfilePictureTableReferences),
+    ProfilePictureData,
+    PrefetchHooks Function({bool profileId})> {
+  $$ProfilePictureTableTableManager(
+      _$AppDatabase db, $ProfilePictureTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ProfilePictureTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ProfilePictureTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ProfilePictureTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> profileId = const Value.absent(),
+            Value<String> photoPath = const Value.absent(),
+          }) =>
+              ProfilePictureCompanion(
+            id: id,
+            profileId: profileId,
+            photoPath: photoPath,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int profileId,
+            required String photoPath,
+          }) =>
+              ProfilePictureCompanion.insert(
+            id: id,
+            profileId: profileId,
+            photoPath: photoPath,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$ProfilePictureTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({profileId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (profileId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.profileId,
+                    referencedTable:
+                        $$ProfilePictureTableReferences._profileIdTable(db),
+                    referencedColumn:
+                        $$ProfilePictureTableReferences._profileIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$ProfilePictureTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $ProfilePictureTable,
+    ProfilePictureData,
+    $$ProfilePictureTableFilterComposer,
+    $$ProfilePictureTableOrderingComposer,
+    $$ProfilePictureTableAnnotationComposer,
+    $$ProfilePictureTableCreateCompanionBuilder,
+    $$ProfilePictureTableUpdateCompanionBuilder,
+    (ProfilePictureData, $$ProfilePictureTableReferences),
+    ProfilePictureData,
     PrefetchHooks Function({bool profileId})>;
 
 class $AppDatabaseManager {
@@ -1983,6 +3273,10 @@ class $AppDatabaseManager {
       $$ProfileTableTableManager(_db, _db.profile);
   $$FriendTableTableManager get friend =>
       $$FriendTableTableManager(_db, _db.friend);
-  $$PhotoTableTableManager get photo =>
-      $$PhotoTableTableManager(_db, _db.photo);
+  $$PictureTableTableManager get picture =>
+      $$PictureTableTableManager(_db, _db.picture);
+  $$GalleryPictureTableTableManager get galleryPicture =>
+      $$GalleryPictureTableTableManager(_db, _db.galleryPicture);
+  $$ProfilePictureTableTableManager get profilePicture =>
+      $$ProfilePictureTableTableManager(_db, _db.profilePicture);
 }

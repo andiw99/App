@@ -1,6 +1,7 @@
 // I think we also should have clients for the cache interaction in case we will switch out the DB
 
 import 'package:chatapp_frontend/main.dart';
+import 'package:chatapp_frontend/src/constants.dart';
 import 'package:chatapp_frontend/src/database.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
@@ -16,6 +17,12 @@ abstract class RepositoryClient {
   Future<Map<String, dynamic>> getProfile();   // should probably actually be a map or something
   
   Future<int> updateProfile(Map<String, dynamic> userInfo, String username);
+
+  void addGalleryPicture(int profileId, String path);
+
+  Future removeGalleryPicture(String filename);
+
+  Future<List<String>> getGalleryPictures(int profileId);
 }
 
 class DriftRepositoryClient extends RepositoryClient {
@@ -68,7 +75,7 @@ class DriftRepositoryClient extends RepositoryClient {
         if(query.isEmpty) {
           return {};
         } else {
-        final profile = query[0];   
+        final profile = query[0];   // TODO why is it always the first entry?
         return profile.toJson();
         }
 
@@ -90,6 +97,29 @@ class DriftRepositoryClient extends RepositoryClient {
         return (await driftDatabaseInstance.delete($ProfileTable(driftDatabaseInstance)).go());
       }
 
+      @override
+      Future<List<String>> getGalleryPictures(int profileId) async {
+        //
+        List<String> pictureNames = [];
+        var pictures = (await (database.select(database.galleryPicture)
+        ..where((picture) => picture.profileId.equals(profileId))).get());
+        for (var picture in pictures) {
+          pictureNames.add(picture.photoPath);
+        }
+        return pictureNames;
+      }
+      
+      @override
+      void addGalleryPicture(int profileId, String filename) async {
+        await database.into(database.galleryPicture).insert(GalleryPictureCompanion.insert(
+        profileId: profileId,
+        photoPath: filename));
+      }
+      
+      @override
+      Future removeGalleryPicture(String filename) async {
+      return (await (database.delete(database.galleryPicture)..where((t) => t.photoPath.equals(filename))).go());
+      }
 }
 
 

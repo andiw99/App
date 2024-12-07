@@ -11,4 +11,6 @@ urlpatterns = [
     path('get-user-info/', views.getUserInfo),
     path('change-user-info/', views.changeUserInfo),
     path('upload-gallery-image/', views.receiveUserImage),
+    path('get-gallery-images/', views.getUserImages),
+    path('download-image/', views.sendGalleryImage),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
