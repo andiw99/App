@@ -117,7 +117,6 @@ def sendImage(image_path, image_name=""):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def sendGalleryImage(request):
-    print("Happening")
     # where do we get the image names from? should be send in the body of the get request?
     # No, probably just querystring
     image_name = request.GET.get('name')
@@ -127,3 +126,22 @@ def sendGalleryImage(request):
     image_path = image_obj.preview_image.path
     print("image_path = ", image_path)
     return sendImage(image_path, image_name)
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def deleteGalleryImage(request):
+    # Get the image name from querystring
+    image_name = request.GET.get('name')
+    print("image_name to delete = ", image_name)
+    image_obj = get_object_or_404(GalleryPicture, image=f"{IMAGE_PATH}/full/{image_name}")
+    # I guess we want to cache only the preview images?
+    try:
+        print(image_obj.delete())
+        return JsonResponse({'statuscode': 200, 'statusmessage': f'successfully deleted  {image_name}', }, status=200)   
+    except Exception as e:
+        print(e)
+        return JsonResponse({
+            'error': str(e)
+        }, status=500)

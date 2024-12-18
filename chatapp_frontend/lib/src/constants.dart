@@ -8,6 +8,7 @@ const changeUserInfoUrl = "change-user-info";
 const uploadImageUrl = "upload-gallery-image";
 const getImagesUrl = "get-gallery-images";
 const downloadImageUrl = "download-image";
+const deleteImageUrl = "delete-image";
 
 // Strings
 const String editProfile = "Edit Profile";
@@ -28,6 +29,7 @@ const String registeredOn = "Registered on ";
 const String registeredOnDate = "15.08.2024";
 const String deleteAcc = "Delete Account";
 const String submitChanges = "Submit";
+const String deleteString = "Delete";
 const String writeBiography = "Write Your Bio to make People laugh";
 const String myBiography = "Eichelkäse der so groß ist dass er auf mehrere Zeilen geschrieben werden muss, echt unfassbar";
 
@@ -35,6 +37,7 @@ const String myBiography = "Eichelkäse der so groß ist dass er auf mehrere Zei
 const primaryColor = Colors.blue;
 const accentColor = Colors.grey;
 const darkColor = Colors.black;
+const alertColor = Colors.red;
 
 // Sizes
 const defaultPadding = 10.0;

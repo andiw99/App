@@ -5,6 +5,7 @@ import phonenumbers
 from PIL import Image
 from django.core.files.base import ContentFile
 import io
+import os
 
 PREVIEW_RESOLUTION = 200
 
@@ -38,6 +39,18 @@ class MyImage(models.Model):
                 ContentFile(thumb_io.getvalue()),
                 save=False
             )
+
+    def delete(self, *args, **kwargs):
+        # Delete the associated image file from storage
+        if self.image:
+            if os.path.isfile(self.image.path):
+                os.remove(self.image.path)
+        # as well for the preview image
+        if self.preview_image:
+            if os.path.isfile(self.preview_image.path):
+                os.remove(self.preview_image.path)
+        # Call the superclass's delete method
+        return super().delete(*args, **kwargs)
 
 class UserImage(MyImage):
     # This will be the model for images that are attached to users?

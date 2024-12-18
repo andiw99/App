@@ -1,5 +1,7 @@
+import 'package:chatapp_frontend/components/gallerayimage.dart';
 import 'package:chatapp_frontend/main.dart';
 import 'package:chatapp_frontend/src/constants.dart';
+import 'package:chatapp_frontend/src/functions.dart';
 import 'package:chatapp_frontend/src/restapi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -19,8 +21,8 @@ class UpdateGallery extends StatefulWidget {
 class _UpdateGalleryState extends State<UpdateGallery> {
   List<String> _images = [];
   List<String> _cachedImages = [];
+  List<bool> _checkedImages = [];
   Directory _assetDirectory = Directory("");
-  
 
   Future<void> _pickImage(BuildContext context, ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(source: source);
@@ -33,27 +35,8 @@ class _UpdateGalleryState extends State<UpdateGallery> {
         final statuscode =
             await restClient.upload(userMemoryClient.getToken(), pickedFile);
         // For now, just show a simple dialog with the file path
-        if(statuscode == 201) {
-          _getImages();
-          // The XFile pickedfile should be saved to the standard location
-          /*
-          try {
-            // Get the directory where the file will be saved
-            final directory = await getAssetDirectory();
-            final String path = directory.path;
-
-            // Define the file path to save the file
-            final String newFilePath = '$path${pickedFile.name}';
-
-            // Save the XFile to disk
-            final File newFile = File(newFilePath);
-            await newFile.writeAsBytes(await pickedFile.readAsBytes());     // We use full sized pictures here...
-
-            repositoryClient.addGalleryPicture((await repositoryClient.getProfile())['id'], pickedFile.name);
-            print('File saved to: $newFilePath');
-          } catch (e) {
-            print('Error saving file: $e');
-          }*/
+        if (statuscode == 201) {
+          _getImages();          
         }
         showDialog(
           context: context,
@@ -113,49 +96,81 @@ class _UpdateGalleryState extends State<UpdateGallery> {
 
   void _getImages() async {
     _assetDirectory = await getAssetDirectory();
-    _cachedImages = await repositoryClient.getGalleryPictures((await repositoryClient.getProfile())['id']);
+    _cachedImages = await repositoryClient
+        .getGalleryPictures((await repositoryClient.getProfile())['id']);
     setState(() {
       _images = _cachedImages;
+      _checkedImages = List.filled(_images.length, false);
     });
 
-    if(userMemoryClient.getToken().isNotEmpty) {
-      _images = await restClient.getGalleryPictures(userMemoryClient.getToken());
+    if (userMemoryClient.getToken().isNotEmpty) {
+      _images =
+          await restClient.getGalleryPictures(userMemoryClient.getToken());
     }
-    print(_images);
-    print("^^^");
-    print(_cachedImages);
     // check if we already know thi
     List<String> downloadableImages = [];
-    for(var image in _images) {
+    for (var image in _images) {
       // most gallery pictures will be cached
-      if(!_cachedImages.contains(image)) {
+      if (!_cachedImages.contains(image)) {
         downloadableImages.add(image);
       }
     }
 
     // dowload new images
-    print("Downloadables");
-    print(downloadableImages);
     _downloadImages(downloadableImages);
   }
 
-  void _downloadImages(List<String> images) async {    
+  void _downloadImages(List<String> images) async {
     // add newly downloaded pictures to db
     var profileId = (await repositoryClient.getProfile())['id'];
-    for(var image in images) {
-      int statuscode = await restClient.downloadPicture(userMemoryClient.getToken(), image);
-      if(statuscode == 1) {
+    for (var image in images) {
+      int statuscode =
+          await restClient.downloadPicture(userMemoryClient.getToken(), image);
+      if (statuscode == 1) {
         // can this already happen when the picture is not fully downloaded?
         print("Successfully downloaded picture, adding it to DB");
         repositoryClient.addGalleryPicture(profileId, image);
-      setState(() {
-        _images = _images;
-      });
+        setState(() {
+          _images = _images;
+          _checkedImages = List.filled(_images.length, false);
+        });
       } else {
         print("Error downloading... statuscode $statuscode");
       }
-      
-    } 
+    }
+  }
+
+  void _deleteImages(List<String> images) async {
+    // will call a method from the restClient obviously
+    // probably just one image at a time
+    // should also delete the cached image on the phone
+    for (var image in images) {
+      int statuscode =
+          await restClient.deletePicture(userMemoryClient.getToken(), image);
+      if (statuscode == 1) {
+        // can this already happen when the picture is not fully downloaded?
+        print("Successfully deleted picture, removing it from DB");
+        repositoryClient.removeGalleryPicture(image);
+        _images.remove(image);
+      } else {
+        print("Error downloading... statuscode $statuscode");
+      }
+    }
+    setState(() {
+          _images = _images;
+          _checkedImages = List.filled(_images.length, false);
+        });
+  }
+
+
+  void _checkBox(bool? value, int index) {
+      setState(() {
+        if (value == true) {
+          _checkedImages[index] = true;
+        } else {
+          _checkedImages[index] = false;
+        }
+      });
   }
 
   @override
@@ -172,6 +187,7 @@ class _UpdateGalleryState extends State<UpdateGallery> {
   Widget build(BuildContext context) {
     // final controller = Get.put(ProfileController());
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         title: Text(editGallery,
             style: Theme.of(context).textTheme.headlineMedium),
@@ -198,152 +214,63 @@ class _UpdateGalleryState extends State<UpdateGallery> {
             // -- Form Fields
             const Text("Upload images to curate your mystery"),
             SizedBox(
-              height: 400,    // TODO how do I build it so it stretches the whole screen?
+              height:
+                  400, // TODO how do I build it so it stretches the whole screen?
               child: Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: GridView.count(
-                    crossAxisSpacing: 0.5,
-                    mainAxisSpacing: 0.5,
-                    crossAxisCount: 3,    // 3 pictures per row
-                    children: [
-                      ...List.generate(_images.length, (index) {
-                      return Container(
-                        color: Colors.blue,
-                        child: SizedBox(
-                                      width: galleryImageWidth,
-                                      height: galleryImageHeight,
-                                      child: ClipRRect(
-                                          child: Image(
-                                              fit: BoxFit.cover,
-                                              image:
-                                                  FileImage(File("${_assetDirectory.path}${_images[index]}")))),
-                                    ),
-                      );
+                  crossAxisSpacing: 1,
+                  mainAxisSpacing: 1,
+                  crossAxisCount: 3, // 3 pictures per row
+                  children: [
+                    ...List.generate(_images.length, (index) {
+                      return galleryImageWidget(
+                        image: File("${_assetDirectory.path}${_images[index]}"),
+                        onPress: (value) {_checkBox(value, index);},
+                        checked: _checkedImages[index]);                    
                     }),
-                          GestureDetector(
-                            onTap: () {},
-                            child: GestureDetector(
-                              onTap: () => _showImageSourceSelection(context),
-                              child: Container(
-                                color: Colors.white38,
-                                width: galleryImageWidth,
-                                height: galleryImageHeight,
-                                child: const ClipRRect(
-                                    child: Icon(
-                                  Icons.upload,
-                                  size: 32,
-                                )),
-                              ),
-                            ),
-                          ),
-
-                    ],
-                  ),
-                   /* Column(
-                    children: [
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: SizedBox(
-                              height: 150,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: 10, // Number of pictures
-                                itemBuilder: (context, index) {
-                                  return const SizedBox(
-                                    width: galleryImageWidth,
-                                    height: galleryImageHeight,
-                                    child: ClipRRect(
-                                        child: Image(
-                                            image:
-                                                AssetImage(profilePicturePath))),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                          /*
-                          Expanded(
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: 2,
-                              itemBuilder: (context, index) {
-                                return const SizedBox(
-                                  width: galleryImageWidth,
-                                  height: galleryImageHeight,
-                                  child: ClipRRect(
-                                      child: Image(
-                                          image: AssetImage(profilePicturePath))),
-                                );
-                              },
-                            ),
-                          ),
-              // TODO should load images from server or from cache
-                          const SizedBox(
-                            width: galleryImageWidth,
-                            height: galleryImageHeight,
-                            child: ClipRRect(
-                                child:
-                                    Image(image: AssetImage(profilePicturePath))),
-                          ),
-                          const SizedBox(
-                            width: galleryImageWidth,
-                            height: galleryImageHeight,
-                            child: ClipRRect(
-                                child:
-                                    Image(image: AssetImage(profilePicturePath))),
-                          ),
-                          GestureDetector(
-                            onTap: () {},
-                            child: GestureDetector(
-                              onTap: () => _showImageSourceSelection(context),
-                              child: Container(
-                                color: Colors.white38,
-                                width: galleryImageWidth,
-                                height: galleryImageHeight,
-                                child: const ClipRRect(
-                                    child: Icon(
-                                  Icons.upload,
-                                  size: 32,
-                                )),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: formHeight),
-                          SizedBox(
-                            height: 50,
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: primaryColor,
-                                  side: BorderSide.none,
-                                  shape: const StadiumBorder()),
-                              child: const Text(submitChanges,
-                                  style: TextStyle(color: darkColor)),
-                            ),
-                          ),*/
-                        ],
+                    GestureDetector(
+                      onTap: () {},
+                      child: GestureDetector(
+                        onTap: () => _showImageSourceSelection(context),
+                        child: Container(
+                          color: Colors.white38,
+                          width: galleryImageWidth,
+                          height: galleryImageHeight,
+                          child: const ClipRRect(
+                              child: Icon(
+                            Icons.upload,
+                            size: 32,
+                          )),
+                        ),
                       ),
-                    ],
-                  ),*/
-                ),
+                    ),
+                  ],
+                ),                
               ),
-              const SizedBox(height: formHeight),
-              SizedBox(
-                height: 50,
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      side: BorderSide.none,
-                      shape: const StadiumBorder()),
-                  child: const Text(submitChanges,
-                      style: TextStyle(color: darkColor)),
-                ),
             ),
-          ]), 
+            const SizedBox(height: formHeight),
+
+            Row(
+              children: [
+                if (_checkedImages.any((value) => value))
+                  Expanded(
+                    child: SizedBox(
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () {_deleteImages(getFilteredList(_images, _checkedImages));},
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: alertColor,
+                            side: BorderSide.none,
+                            shape: const StadiumBorder()),
+                        child: const Text(deleteString,
+                            style: TextStyle(color: darkColor)),
+                      ),
+                    ),
+                  ),                
+              ],
+            ),
+          ]),
         ),
       ),
     );

@@ -118,7 +118,8 @@ class DriftRepositoryClient extends RepositoryClient {
       
       @override
       Future removeGalleryPicture(String filename) async {
-      return (await (database.delete(database.galleryPicture)..where((t) => t.photoPath.equals(filename))).go());
+        // should probably delete the DB entry as well as the actual file?
+        return (await (database.delete(database.galleryPicture)..where((t) => t.photoPath.equals(filename))).go());
       }
 }
 

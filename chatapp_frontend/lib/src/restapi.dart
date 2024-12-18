@@ -27,6 +27,8 @@ abstract class Api {
   Future<List<String>> getGalleryPictures(String token);
 
   Future<int> downloadPicture(String token, String filename);
+
+  Future<int> deletePicture(String token, String filename);
 }
 
 class DjangoRestApi extends Api {
@@ -122,12 +124,14 @@ class DjangoRestApi extends Api {
       var retrieveURL = Uri.parse('$baseURL/$downloadImageUrl/?name=$filename');
       final response = (await client.get(retrieveURL,
         headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',  // do I need this line?
+          'Content-Type': 'application/json; charset=UTF-8',  // TODO do I need this line?
           'Authorization': 'Token $token'
           },
       ));
       if (response.statusCode == 200) {
           // Parse the response
+          // TODO I don't know if it is good design that the picture is written to disk here instead 
+          // of somewhere else in maybe a totally different client like a 'storage client'
           final Map<String, dynamic> data = json.decode(response.body);
           // Decode base64 image
           final String base64Image = data['image_data'];          
@@ -142,6 +146,44 @@ class DjangoRestApi extends Api {
           return 1;
         } else {
           print('Failed to load image');
+          return response.statusCode;          
+        };
+    } catch (e) {
+      print(e);
+      return 0;
+  }
+  }
+  
+  @override
+  Future<int> deletePicture(String token, String filename) async {
+    // First we need an endpoint at the django backend
+    try{
+      var retrieveURL = Uri.parse('$baseURL/$deleteImageUrl/?name=$filename');
+      final response = (await client.get(retrieveURL,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',  // TODO do I need this line?
+          'Authorization': 'Token $token'
+          },
+      ));
+      if (response.statusCode == 200) {
+          // TODO should I delete the image here?
+          try {
+            Directory assetDirectory = await getAssetDirectory();
+            final File imageFile = File('${assetDirectory.path}$filename');
+            if (await imageFile.exists()) {
+              await imageFile.delete();
+              print('Image deleted successfully.');
+            } else {
+              print('Image not found.');
+            }
+          } catch (e) {
+            print('Error deleting image: $e');
+          }
+
+          return 1;
+        } else {
+          final Map<String, dynamic> msg = json.decode(response.body);
+          print(msg['error']);
           return response.statusCode;          
         };
     } catch (e) {
