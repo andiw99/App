@@ -231,6 +231,7 @@ class _UpdateGalleryState extends State<UpdateGallery> {
                       return galleryImageWidget(
                         image: File("${_assetDirectory.path}${_images[index]}"),
                         onPress: (value) {_checkBox(value, index);},
+                        onClick: clickImageStandard,
                         checked: _checkedImages[index]);                    
                     }),
                     GestureDetector(
