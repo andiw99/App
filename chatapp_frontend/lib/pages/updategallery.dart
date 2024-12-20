@@ -124,11 +124,15 @@ class _UpdateGalleryState extends State<UpdateGallery> {
     // add newly downloaded pictures to db
     var profileId = (await repositoryClient.getProfile())['id'];
     for (var image in images) {
-      int statuscode =
+      var imageResponse =
           await restClient.downloadPicture(userMemoryClient.getToken(), image);
+      int statuscode = imageResponse['status'];
       if (statuscode == 1) {
         // can this already happen when the picture is not fully downloaded?
         print("Successfully downloaded picture, adding it to DB");
+        // should the repository client save the File? Not for now...
+        var imageBytes = imageResponse['FileBytes'];
+        await storeImage(image, imageBytes);
         repositoryClient.addGalleryPicture(profileId, image);
         setState(() {
           _images = _images;

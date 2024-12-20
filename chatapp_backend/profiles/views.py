@@ -1,3 +1,4 @@
+import time
 from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -127,6 +128,17 @@ def sendGalleryImage(request):
     print("image_path = ", image_path)
     return sendImage(image_path, image_name)
 
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def sendFullGalleryImage(request):
+    # same as above but it sends the full image
+    image_name = request.GET.get('name')    
+    image_obj = get_object_or_404(GalleryPicture, image=f"{IMAGE_PATH}/full/{image_name}")
+    # in some cases we obviously need to send the full image    
+    image_path = image_obj.image.path
+    time.sleep(1)    # TODO remove!!
+    return sendImage(image_path, image_name)
 
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])

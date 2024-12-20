@@ -6,6 +6,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:chatapp_frontend/src/constants.dart';
+import 'package:chatapp_frontend/src/functions.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
@@ -26,7 +27,7 @@ abstract class Api {
 
   Future<List<String>> getGalleryPictures(String token);
 
-  Future<int> downloadPicture(String token, String filename);
+  Future<Map<String, dynamic>> downloadPicture(String token, String filename, {String downloadUrl=downloadImageUrl});
 
   Future<int> deletePicture(String token, String filename);
 }
@@ -119,9 +120,15 @@ class DjangoRestApi extends Api {
   }
   
   @override
-  Future<int> downloadPicture(String token, String filename) async {
+  Future<Map<String, dynamic>> downloadPicture(String token, String filename, {String downloadUrl=downloadImageUrl}) async {
+    // I think we need to do some refactoring here, the image should not be saved by the
+    // rest client. Sadly we cannot pass the File by reference seems like it
+    Map<String, dynamic> res = {
+      'status': 0,
+      'FileBytes': Null
+      };
     try{
-      var retrieveURL = Uri.parse('$baseURL/$downloadImageUrl/?name=$filename');
+      var retrieveURL = Uri.parse('$baseURL/$downloadUrl/?name=$filename');
       final response = (await client.get(retrieveURL,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',  // TODO do I need this line?
@@ -139,19 +146,25 @@ class DjangoRestApi extends Api {
           final Uint8List imageBytes = base64.decode(base64Image);
     
           Directory assetDirectory = await getAssetDirectory();
-          final File imageFile = File('${assetDirectory.path}$filename');
-          // Save the image
-          await imageFile.writeAsBytes(imageBytes);
-          print('Image saved: ${imageFile.path}');
-          return 1;
+          // final File imageFile = File('${assetDirectory.path}$filename'); 
+          
+          // Save the image (will be postponed now)
+          // await imageFile.writeAsBytes(imageBytes);
+          res['FileBytes'] = imageBytes;
+          print('Image loaded');
+          res['status'] = 1;
+          //return 1;
         } else {
           print('Failed to load image');
-          return response.statusCode;          
+          res['status'] = response.statusCode;
+          // return response.statusCode;          
         };
+      return res;
     } catch (e) {
       print(e);
-      return 0;
-  }
+      // return res;
+    } 
+    return res;
   }
   
   @override
@@ -193,10 +206,3 @@ class DjangoRestApi extends Api {
   }
 }
 
-Future<Directory> getAssetDirectory() async {
-    final assetDirectory = Directory("${(await getApplicationDocumentsDirectory()).path}/$pictureBasePath");
-    if (!await assetDirectory.exists()) {
-      await assetDirectory.create(recursive: true);
-    }
-  return assetDirectory;
-}

@@ -8,6 +8,7 @@ const changeUserInfoUrl = "change-user-info";
 const uploadImageUrl = "upload-gallery-image";
 const getImagesUrl = "get-gallery-images";
 const downloadImageUrl = "download-image";
+const downloadFullImageUrl = "download-full-image";
 const deleteImageUrl = "delete-image";
 
 // Strings
